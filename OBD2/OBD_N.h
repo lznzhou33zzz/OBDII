@@ -7,7 +7,7 @@
 
 #ifndef OBC_N_H_
 #define OBC_N_H_
-#include "OBD.h"
+#include "OBD_DL.h"
 
 #define N_FWTmax
 #define TIMEOUT_N_As			1000

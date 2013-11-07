@@ -191,6 +191,118 @@ void PDU2DataLinkParameter(N_PDU_type * current_pdu,DataLinkParameter_type * cur
  * Return:
  *
  */
-void FlowCtrlCallBack(N_PDU_type * current_pdu,DataLinkParameter_type * current_DataLinkParameter){
+void FlowCtrlCallBack(N_PDU_type * current_pdu,
+		DataLinkParameter_type * current_DataLinkParameter){
+
+}
+
+
+
+
+
+/*
+ * Function:
+ * Description:
+ * Parameter:
+ * Return:
+ *
+ */
+void N_USDataRequest(Message_type Mtype,
+					unsigned char N_SA,
+					unsigned char N_TA,
+					Address_type N_TAtype,		//network address type
+					unsigned char N_AE,			//network address extension
+					unsigned char *MessageDat,
+					unsigned short Length){
+
+}
+
+
+/*
+ * Function:
+ * Description:
+ * Parameter:
+ * Return:
+ *
+ */
+void N_USDataConfirm(Message_type Mtype,
+					unsigned char N_SA,
+					unsigned char N_TA,
+					Address_type N_TAtype,
+					unsigned char N_AE,
+					N_Result_type N_Result){
+
+}
+
+
+/*
+ * Function:
+ * Description:
+ * Parameter:
+ * Return:
+ *
+ */
+void N_USDataFFIndication(Message_type Mtype,
+						unsigned char N_SA,
+						unsigned char N_TA,
+						Address_type N_TAtype,		//network address type
+						unsigned char N_AE,			//network address extension
+						unsigned char *MessageData,
+						unsigned short Length){
+
+}
+
+
+
+/*
+ * Function:
+ * Description:
+ * Parameter:
+ * Return:
+ *
+ */
+void N_USDataIndication(Message_type Mtype,
+						unsigned char N_SA,
+						unsigned char N_TA,
+						Address_type N_TAtype,		//network address type
+						unsigned char N_AE,			//network address extension
+						unsigned char *MessageData,
+						unsigned short Length,
+						N_Result_type N_Result){
+
+}
+
+/*
+ * Function:
+ * Description:
+ * Parameter:
+ * Return:
+ *
+ */
+void N_ChangeParameterRequest(Message_type Mtype,
+							unsigned char N_SA,
+							unsigned char N_TA,
+							Address_type N_TAtype,		//network address type
+							unsigned char N_AE,
+							Parameter_type Parameter,
+							unsigned char Parameter_Value){
+
+}
+
+
+/*
+ * Function:
+ * Description:
+ * Parameter:
+ * Return:
+ *
+ */
+void N_ChangePatameterConfirm(Message_type Mtype,
+							unsigned char N_SA,
+							unsigned char N_TA,
+							Address_type N_TAtype,		//network address type
+							unsigned char N_AE,
+							Parameter_type Parameter,
+							Result_ChangeParameter_type Result_ChangeParameter){
 
 }
