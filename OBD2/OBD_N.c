@@ -44,7 +44,7 @@ void NetworkLayer_Flow_ctrl()
 			break;
 		case sendFirstFrame:
 			SendFirstFrame();
-			if()
+			if()//Send success
 				NetworeLayerFlowState = waitFlowCtrlFrame;
 			else
 				;
@@ -56,6 +56,7 @@ void NetworkLayer_Flow_ctrl()
 				;
 			break;
 		case sendConsecutiveFrame:
+			//send consecutive frame
 			if()
 				NetworeLayerFlowState = waitFlowCtrlFrame;
 			else
