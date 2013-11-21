@@ -211,36 +211,56 @@ typedef enum{
 				struct{
 					unsigned char N_PCItype:4 = SF;
 					unsigned char SF_DL:4;
-				}byte1;
+				}BIT;
 			}SF_PCI;//SingleFrame
 			struct{
 				struct{
 					unsigned char N_PCItype:4 = FF;
 					unsigned short FF_DL:12;
-				}byte1_byte2;
+				}BIT;
 			}FF_PCI;//FirstFrame
 			struct{
 				struct{
 					unsigned char N_PCItype = CF;
-				}byte1;
+				}BIT;
 			}CF_PCI;//ConsecutiveFrame
 			struct{
 				struct{
 					unsigned char N_PCItype:4 = FC;
 					FS_type FS:4;
-				}byte1;
-				struct{
 					unsigned char BS;
-				}byte2;
-				struct{
 					unsigned char STmin;
-				}byte3;
+				}BIT;
 			}FC_PCI;//FlowControl
+			struct {
+				unsigned char byte1;
+				unsigned char byte2;
+				unsigned char byte3;
+			}BYTE;
 		}PCI;
 		PCIType_type PCIType;
 	}N_PCI_type;
-	typedef struct{
-
+	typedef union{
+		//normal addressing
+		unsigned char Nml_SF_Data[7];//SingleFrame
+		unsigned char Nml_FF_Data[6];//FirstFrame
+		unsigned char Nml_CF_Data[7];//ConsecutiveFrame
+		unsigned char Nml_FC_Data[5];//FlowControl
+		//Normal fixed addressing
+		unsigned char NF_SF_Data[7];//SingleFrame
+		unsigned char NF_FF_Data[6];//FirstFrame
+		unsigned char NF_CF_Data[7];//ConsecutiveFrame
+		unsigned char NF_FC_Data[5];//FlowControl
+		//Extended addressing
+		unsigned char Ext_SF_Data[6];//SingleFrame
+		unsigned char Ext_FF_Data[5];//FirstFrame
+		unsigned char Ext_CF_Data[6];//ConsecutiveFrame
+		unsigned char Ext_FC_Data[4];//FlowControl
+		//Mixed addressing
+		unsigned char Mix_SF_Data[7];//SingleFrame
+		unsigned char Mix_FF_Data[6];//FirstFrame
+		unsigned char Mix_CF_Data[7];//ConsecutiveFrame
+		unsigned char Mix_FC_Data[5];//FlowControl
 	}N_DATA_type;
 	/*------------------- N_PDU ------------------*/
 	typedef struct {

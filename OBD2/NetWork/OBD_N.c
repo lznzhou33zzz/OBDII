@@ -138,8 +138,10 @@ void FlowCtrlCallBack(){
  *
  */
 void PDU2DataLinkParameter(N_PDU_type * current_pdu,DataLinkParameter_type * current_DataLinkParameter){
+	short i;
 	switch(current_pdu->N_AI.AddressType){
 	case normal_address:
+		//1. Set ID
 		if(current_pdu->N_AI.N_TAtype == phyiscal){
 			current_DataLinkParameter->ID = (current_pdu->N_AI.N_SA
 			|=((unsigned long)current_pdu->N_AI.N_TA) << 8
@@ -156,13 +158,40 @@ void PDU2DataLinkParameter(N_PDU_type * current_pdu,DataLinkParameter_type * cur
 		}
 		else
 		{;}
+		//2. Set DLC
+		current_DataLinkParameter->DLC = 8;
+		//3. Set Data
+		switch (current_pdu->N_PCI.PCIType){
+		case SF:
+			current_DataLinkParameter->DATA[0] = current_pdu->N_PCI.PCI.BYTE.byte1;
+			for(i = 1; i < 8; i++)
+				current_DataLinkParameter->DATA[i] = current_pdu->N_DATA.Nml_SF_Data[i-1];
+			break;
+		case FF:
+			current_DataLinkParameter->DATA[0] = current_pdu->N_PCI.PCI.BYTE.byte1;
+			current_DataLinkParameter->DATA[1] = current_pdu->N_PCI.PCI.BYTE.byte2;
+			for(i = 2; i < 8; i++)
+				current_DataLinkParameter->DATA[i] = current_pdu->N_DATA.Nml_SF_Data[i-2];
+			break;
+		case CF:
+			current_DataLinkParameter->DATA[0] = current_pdu->N_PCI.PCI.BYTE.byte1;
+			for(i = 1; i < 8; i++)
+				current_DataLinkParameter->DATA[i] = current_pdu->N_DATA.Nml_SF_Data[i-1];
+			break;
+		case FC:
+			current_DataLinkParameter->DATA[0] = current_pdu->N_PCI.PCI.BYTE.byte1;
+			current_DataLinkParameter->DATA[1] = current_pdu->N_PCI.PCI.BYTE.byte2;
+			current_DataLinkParameter->DATA[2] = current_pdu->N_PCI.PCI.BYTE.byte3;
+			for(i = 3; i < 8; i++)
+					current_DataLinkParameter->DATA[i] = current_pdu->N_DATA.Nml_SF_Data[i-3];
+			break;
+		}
 		break;
 	case extended_address:
 		current_DataLinkParameter->DATA[0] = current_pdu->N_AI.N_TA;
 		break;
 	case mixed_address:
-
-
+		//1. Set ID
 		if(current_pdu->N_AI.N_TAtype == phyiscal){
 			current_DataLinkParameter->ID = (current_pdu->N_AI.N_SA
 			|=((unsigned long)current_pdu->N_AI.N_TA) << 8
@@ -179,6 +208,26 @@ void PDU2DataLinkParameter(N_PDU_type * current_pdu,DataLinkParameter_type * cur
 		}
 		else
 		{;}
+		//2. Set DLC
+		current_DataLinkParameter->DLC = 8;
+		//3. Set Data
+		switch (current_pdu->N_PCI.PCIType){
+		case SF:
+			current_DataLinkParameter->DATA[0] = current_pdu->N_PCI.PCI.BYTE.byte1;
+			break;
+		case FF:
+			current_DataLinkParameter->DATA[0] = current_pdu->N_PCI.PCI.BYTE.byte1;
+			current_DataLinkParameter->DATA[1] = current_pdu->N_PCI.PCI.BYTE.byte2;
+			break;
+		case CF:
+			current_DataLinkParameter->DATA[0] = current_pdu->N_PCI.PCI.BYTE.byte1;
+			break;
+		case FC:
+			current_DataLinkParameter->DATA[0] = current_pdu->N_PCI.PCI.BYTE.byte1;
+			current_DataLinkParameter->DATA[1] = current_pdu->N_PCI.PCI.BYTE.byte2;
+			current_DataLinkParameter->DATA[2] = current_pdu->N_PCI.PCI.BYTE.byte3;
+			break;
+		}
 		break;
 	default:
 		break;
