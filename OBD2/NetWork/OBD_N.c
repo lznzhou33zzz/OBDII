@@ -6,7 +6,7 @@
  */
 #include "Common.h"
 #include "OBD_N.h"
-
+#include "DataLink.h"
 
 unsigned char FlowCtrlStart = 0;
 enum {
@@ -15,14 +15,7 @@ enum {
 	waitFlowCtrlFrame,
 	sendConsecutiveFrame,
 	finishFlow,
-}NetworeLayerFlowState;
-
-
-unsigned short SendFirstFrame();
-void SendConsecutiveFrame();
-void DisposeFlowCtrlFrame();
-void DisposeException();
-void FlowCtrlCallBack();
+}NetworkLayerFlowState;
 
 
 
@@ -33,38 +26,63 @@ void FlowCtrlCallBack();
  * Return:
  *
  */
-void NetworkLayer_Flow_ctrl()
+void NetworkLayerSenderFlowctrl()
 {
+	N_PDU_type current_pdu;
+	unsigned short i;
 	while(1){
-		switch(NetworeLayerFlowState)
+		switch(NetworkLayerFlowState)
 		{
 		case idle:
 			if(FlowCtrlStart == TRUE)
-				NetworeLayerFlowState = sendFirstFrame;
+				NetworkLayerFlowState = sendFirstFrame;
 			break;
 		case sendFirstFrame:
-			SendFirstFrame();
-			if()//Send success
-				NetworeLayerFlowState = waitFlowCtrlFrame;
+			L_Data_Request();//FF N_PDU
+			//wait until(stateOfCAN == SuccessSend , N_As )
+			if()//no timeout
+			{
+				L_Data_Confirm(1,Complete);//1 = ID
+				NetworkLayerFlowState = waitFlowCtrlFrame;
+			}
 			else
-				;
+			{
+				L_Data_Confirm(1,Not_Complete);//1 = ID
+				NetworkLayerFlowState = waitFlowCtrlFrame;
+			}
 			break;
 		case waitFlowCtrlFrame:
-			if()
-				NetworeLayerFlowState = sendConsecutiveFrame;
+			//wait until(stateOfCAN == SuccessReceive , N_Bs )
+			if()//no timeout
+			{
+				L_Data_Indication();//FF N_PDU
+				NetworkLayerFlowState = sendConsecutiveFrame;
+			}
 			else
-				;
+			{
+			}
 			break;
 		case sendConsecutiveFrame:
-			//send consecutive frame
-			if()
-				NetworeLayerFlowState = waitFlowCtrlFrame;
-			else
-				NetworeLayerFlowState = finishFlow;
+			for(i = 0 ; i < 1 ; i++)//1 = BS
+			{
+				L_Data_Request();//FC N_PDU
+				//wait until(stateOfCAN == SuccessSend , N_As )
+				if()//no timeout
+				{
+					L_Data_Confirm(1,Complete);//1 = ID
+					NetworkLayerFlowState = waitFlowCtrlFrame;
+				}
+				else
+				{
+					L_Data_Confirm(1,Not_Complete);//1 = ID
+					NetworkLayerFlowState = finishFlow;
+				}
+			}
+			NetworkLayerFlowState = finishFlow;
 			break;
 		case finishFlow:
 			if()
-				NetworeLayerFlowState = idle;
+				NetworkLayerFlowState = idle;
 			else
 				;
 			break;
@@ -81,53 +99,6 @@ void NetworkLayer_Flow_ctrl()
  * Return:
  *
  */
-NetLayerErrorType SendFirstFrame(){
-
-}
-
-/*
- * Function:
- * Description:
- * Parameter:
- * Return:
- *
- */
-void SendConsecutiveFrame(){
-
-}
-
-/*
- * Function:
- * Description:
- * Parameter:
- * Return:
- *
- */
-void DisposeFlowCtrlFrame(){
-
-}
-
-/*
- * Function:
- * Description:
- * Parameter:
- * Return:
- *
- */
-void DisposeException(){
-
-}
-
-/*
- * Function:
- * Description:
- * Parameter:
- * Return:
- *
- */
-void FlowCtrlCallBack(){
-
-}
 
 
 /*
@@ -137,10 +108,97 @@ void FlowCtrlCallBack(){
  * Return:
  *
  */
-void PDU2DataLinkParameter(N_PDU_type * current_pdu,DataLinkParameter_type * current_DataLinkParameter){
+
+
+/*
+ * Function:
+ * Description:
+ * Parameter:
+ * Return:
+ *
+ */
+
+
+/*
+ * Function:
+ * Description:
+ * Parameter:
+ * Return:
+ *
+ */
+
+
+/*
+ * Function:
+ * Description:
+ * Parameter:
+ * Return:
+ *
+ */
+
+
+
+/*
+ * Function:
+ * Description:
+ * Parameter:
+ * Return:
+ *
+ */
+void PDU2DataLinkParameter(
+		N_PDU_type * current_pdu,
+		DataLinkParameter_type * current_DataLinkParameter)
+{
 	short i;
 	switch(current_pdu->N_AI.AddressType){
 	case normal_address:
+		//1. Set ID
+//		if(current_pdu->N_AI.N_TAtype == phyiscal){
+//			current_DataLinkParameter->ID = (current_pdu->N_AI.N_SA
+//			|=((unsigned long)current_pdu->N_AI.N_TA) << 8
+//			|=((unsigned long)0xDA<<16)
+//			|=((unsigned long)0x18<<24)
+//					);
+//		}
+//		else if(current_pdu->N_AI.N_TAtype == functional){
+//			current_DataLinkParameter->ID = (current_pdu->N_AI.N_SA
+//			|=((unsigned long)current_pdu->N_AI.N_TA) << 8
+//			|=((unsigned long)0xDB<<16)
+//			|=((unsigned long)0x18<<24)
+//					);
+//		}
+//		else
+//		{;}
+		//2. Set DLC
+		current_DataLinkParameter->DLC = 8;
+		//3. Set Data
+		switch (current_pdu->N_PCI.PCIType){
+		case SF:
+			current_DataLinkParameter->DATA[0] = current_pdu->N_PCI.PCI.BYTE.byte1;
+			for(i = 1; i < 8; i++)
+				current_DataLinkParameter->DATA[i] = current_pdu->N_DATA.Nml_SF_Data[i-1];
+			break;
+		case FF:
+			current_DataLinkParameter->DATA[0] = current_pdu->N_PCI.PCI.BYTE.byte1;
+			current_DataLinkParameter->DATA[1] = current_pdu->N_PCI.PCI.BYTE.byte2;
+			for(i = 2; i < 8; i++)
+				current_DataLinkParameter->DATA[i] = current_pdu->N_DATA.Nml_SF_Data[i-2];
+			break;
+		case CF:
+			current_DataLinkParameter->DATA[0] = current_pdu->N_PCI.PCI.BYTE.byte1;
+			for(i = 1; i < 8; i++)
+				current_DataLinkParameter->DATA[i] = current_pdu->N_DATA.Nml_SF_Data[i-1];
+			break;
+		case FC:
+			current_DataLinkParameter->DATA[0] = current_pdu->N_PCI.PCI.BYTE.byte1;
+			current_DataLinkParameter->DATA[1] = current_pdu->N_PCI.PCI.BYTE.byte2;
+			current_DataLinkParameter->DATA[2] = current_pdu->N_PCI.PCI.BYTE.byte3;
+			for(i = 3; i < 8; i++)
+					current_DataLinkParameter->DATA[i] = current_pdu->N_DATA.Nml_SF_Data[i-3];
+			break;
+		}
+		break;
+	case normal_fixed_address:
 		//1. Set ID
 		if(current_pdu->N_AI.N_TAtype == phyiscal){
 			current_DataLinkParameter->ID = (current_pdu->N_AI.N_SA
@@ -188,7 +246,36 @@ void PDU2DataLinkParameter(N_PDU_type * current_pdu,DataLinkParameter_type * cur
 		}
 		break;
 	case extended_address:
+		//1. Set ID
+		//2. Set DLC
+		current_DataLinkParameter->DLC = 8;
+		//3. Set Data
 		current_DataLinkParameter->DATA[0] = current_pdu->N_AI.N_TA;
+		switch (current_pdu->N_PCI.PCIType){
+		case SF:
+			current_DataLinkParameter->DATA[1] = current_pdu->N_PCI.PCI.BYTE.byte1;
+			for(i = 2; i < 8; i++)
+				current_DataLinkParameter->DATA[i] = current_pdu->N_DATA.Nml_SF_Data[i-2];
+			break;
+		case FF:
+			current_DataLinkParameter->DATA[1] = current_pdu->N_PCI.PCI.BYTE.byte1;
+			current_DataLinkParameter->DATA[2] = current_pdu->N_PCI.PCI.BYTE.byte2;
+			for(i = 3; i < 8; i++)
+				current_DataLinkParameter->DATA[i] = current_pdu->N_DATA.Nml_SF_Data[i-3];
+			break;
+		case CF:
+			current_DataLinkParameter->DATA[1] = current_pdu->N_PCI.PCI.BYTE.byte1;
+			for(i = 2; i < 8; i++)
+				current_DataLinkParameter->DATA[i] = current_pdu->N_DATA.Nml_SF_Data[i-2];
+			break;
+		case FC:
+			current_DataLinkParameter->DATA[1] = current_pdu->N_PCI.PCI.BYTE.byte1;
+			current_DataLinkParameter->DATA[2] = current_pdu->N_PCI.PCI.BYTE.byte2;
+			current_DataLinkParameter->DATA[3] = current_pdu->N_PCI.PCI.BYTE.byte3;
+			for(i = 4; i < 8; i++)
+					current_DataLinkParameter->DATA[i] = current_pdu->N_DATA.Nml_SF_Data[i-4];
+			break;
+		}
 		break;
 	case mixed_address:
 		//1. Set ID
@@ -211,21 +298,30 @@ void PDU2DataLinkParameter(N_PDU_type * current_pdu,DataLinkParameter_type * cur
 		//2. Set DLC
 		current_DataLinkParameter->DLC = 8;
 		//3. Set Data
+		current_DataLinkParameter->DATA[0] = current_pdu->N_AI.N_AE;
 		switch (current_pdu->N_PCI.PCIType){
 		case SF:
-			current_DataLinkParameter->DATA[0] = current_pdu->N_PCI.PCI.BYTE.byte1;
+			current_DataLinkParameter->DATA[1] = current_pdu->N_PCI.PCI.BYTE.byte1;
+			for(i = 2; i < 8; i++)
+				current_DataLinkParameter->DATA[i] = current_pdu->N_DATA.Nml_SF_Data[i-2];
 			break;
 		case FF:
-			current_DataLinkParameter->DATA[0] = current_pdu->N_PCI.PCI.BYTE.byte1;
-			current_DataLinkParameter->DATA[1] = current_pdu->N_PCI.PCI.BYTE.byte2;
+			current_DataLinkParameter->DATA[1] = current_pdu->N_PCI.PCI.BYTE.byte1;
+			current_DataLinkParameter->DATA[2] = current_pdu->N_PCI.PCI.BYTE.byte2;
+			for(i = 3; i < 8; i++)
+				current_DataLinkParameter->DATA[i] = current_pdu->N_DATA.Nml_SF_Data[i-3];
 			break;
 		case CF:
-			current_DataLinkParameter->DATA[0] = current_pdu->N_PCI.PCI.BYTE.byte1;
+			current_DataLinkParameter->DATA[1] = current_pdu->N_PCI.PCI.BYTE.byte1;
+			for(i = 2; i < 8; i++)
+				current_DataLinkParameter->DATA[i] = current_pdu->N_DATA.Nml_SF_Data[i-2];
 			break;
 		case FC:
-			current_DataLinkParameter->DATA[0] = current_pdu->N_PCI.PCI.BYTE.byte1;
-			current_DataLinkParameter->DATA[1] = current_pdu->N_PCI.PCI.BYTE.byte2;
-			current_DataLinkParameter->DATA[2] = current_pdu->N_PCI.PCI.BYTE.byte3;
+			current_DataLinkParameter->DATA[1] = current_pdu->N_PCI.PCI.BYTE.byte1;
+			current_DataLinkParameter->DATA[2] = current_pdu->N_PCI.PCI.BYTE.byte2;
+			current_DataLinkParameter->DATA[3] = current_pdu->N_PCI.PCI.BYTE.byte3;
+			for(i = 4; i < 8; i++)
+				current_DataLinkParameter->DATA[i] = current_pdu->N_DATA.Nml_SF_Data[i-4];
 			break;
 		}
 		break;
@@ -241,10 +337,7 @@ void PDU2DataLinkParameter(N_PDU_type * current_pdu,DataLinkParameter_type * cur
  * Return:
  *
  */
-void FlowCtrlCallBack(N_PDU_type * current_pdu,
-		DataLinkParameter_type * current_DataLinkParameter){
 
-}
 
 
 
@@ -257,13 +350,8 @@ void FlowCtrlCallBack(N_PDU_type * current_pdu,
  * Return:
  *
  */
-void N_USDataRequest(Message_type Mtype,
-					unsigned char N_SA,
-					unsigned char N_TA,
-					Address_type N_TAtype,		//network address type
-					unsigned char N_AE,			//network address extension
-					unsigned char *MessageDat,
-					unsigned short Length){
+void N_USDataRequest(
+		DATA_Request_type ){
 
 }
 
@@ -275,12 +363,8 @@ void N_USDataRequest(Message_type Mtype,
  * Return:
  *
  */
-void N_USDataConfirm(Message_type Mtype,
-					unsigned char N_SA,
-					unsigned char N_TA,
-					Address_type N_TAtype,
-					unsigned char N_AE,
-					N_Result_type N_Result){
+void N_USDataConfirm(
+		DATA_Confirm_type ){
 
 }
 
@@ -292,13 +376,8 @@ void N_USDataConfirm(Message_type Mtype,
  * Return:
  *
  */
-void N_USDataFFIndication(Message_type Mtype,
-						unsigned char N_SA,
-						unsigned char N_TA,
-						Address_type N_TAtype,		//network address type
-						unsigned char N_AE,			//network address extension
-						unsigned char *MessageData,
-						unsigned short Length){
+void N_USDataFFIndication(
+		DATA_FF_Indication_type){
 
 }
 
@@ -311,14 +390,8 @@ void N_USDataFFIndication(Message_type Mtype,
  * Return:
  *
  */
-void N_USDataIndication(Message_type Mtype,
-						unsigned char N_SA,
-						unsigned char N_TA,
-						Address_type N_TAtype,		//network address type
-						unsigned char N_AE,			//network address extension
-						unsigned char *MessageData,
-						unsigned short Length,
-						N_Result_type N_Result){
+void N_USDataIndication(
+		DATA_Indication_type ){
 
 }
 
@@ -329,13 +402,8 @@ void N_USDataIndication(Message_type Mtype,
  * Return:
  *
  */
-void N_ChangeParameterRequest(Message_type Mtype,
-							unsigned char N_SA,
-							unsigned char N_TA,
-							Address_type N_TAtype,		//network address type
-							unsigned char N_AE,
-							Parameter_type Parameter,
-							unsigned char Parameter_Value){
+void N_ChangeParameterRequest(
+		DATA_FF_Request_type ){
 
 }
 
@@ -347,12 +415,7 @@ void N_ChangeParameterRequest(Message_type Mtype,
  * Return:
  *
  */
-void N_ChangePatameterConfirm(Message_type Mtype,
-							unsigned char N_SA,
-							unsigned char N_TA,
-							Address_type N_TAtype,		//network address type
-							unsigned char N_AE,
-							Parameter_type Parameter,
-							Result_ChangeParameter_type Result_ChangeParameter){
+void N_ChangePatameterConfirm(
+		Change_Para_Confirm_type ){
 
 }

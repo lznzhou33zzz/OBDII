@@ -31,6 +31,7 @@ typedef enum {
 
 typedef enum {
 	normal_address,
+	normal_fixed_address,
 	extended_address,
 	mixed_address
 }Exchange_address_type;
@@ -122,7 +123,7 @@ typedef enum{
 		unsigned char N_AE;			//network address extension
 		unsigned char *MessageData;
 		unsigned short Length;
-	}DATA_FF_Indication_type;
+	}DATA_Indication_type;
 	/*--------indication end---------*/
 	typedef struct{
 		DATA_Request_type request;

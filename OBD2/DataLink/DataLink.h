@@ -36,5 +36,33 @@ typedef enum{
 	Not_Complete
 }Transfer_Status_type;
 
+void L_Data_Request(
+		ID_type Identifier,
+		Formate_type Format,
+		unsigned short DLC,
+		unsigned char (* Data)[8]);
 
+void L_Data_Indication(
+		ID_type Identifier,
+		Formate_type Format,
+		unsigned short DLC,
+		unsigned char (* Data)[8]);
+
+void L_Data_Confirm(
+		ID_type Identifier,
+		Transfer_Status_type Tx_Status);
+
+void L_Remote_Request (
+		ID_type Identifier,
+		Formate_type Format,
+		DataLth_type DLC);
+
+void L_Remote_Indication(
+		ID_type Identifier,
+		Formate_type Format,
+		DataLth_type DLC);
+
+void L_Remote_Confirm(
+		ID_type Identifier,
+		Transfer_Status_type Tx_Status);
 #endif /* DATALINK_H_ */

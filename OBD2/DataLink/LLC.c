@@ -33,7 +33,7 @@
  */
 
 #include "DataLink.h"
-
+#include "OBD_N.h"
 
 
 
@@ -49,8 +49,8 @@
 void L_Data_Request(
 		ID_type Identifier,
 		Formate_type Format,
-		DataLth_type DLC,
-		unsigned char *Data)
+		unsigned short DLC,
+		unsigned char (* Data)[8])
 {};
 
 /*
@@ -63,8 +63,8 @@ void L_Data_Request(
 void L_Data_Indication(
 		ID_type Identifier,
 		Formate_type Format,
-		DataLth_type DLC,
-		unsigned char *Data)
+		unsigned short DLC,
+		unsigned char (* Data)[8])
 {};
 
 /*
