@@ -7,7 +7,7 @@
 #include "Common.h"
 #include "OBD_N.h"
 #include "DataLink.h"
-
+#include "DriverInterFace.h"
 unsigned char FlowCtrlStart = 0;
 enum {
 	idle,
@@ -30,6 +30,8 @@ void NetworkLayerSenderFlowctrl()
 {
 	N_PDU_type current_pdu;
 	unsigned short i;
+	unsigned char chl;
+
 	while(1){
 		switch(NetworkLayerFlowState)
 		{
@@ -39,7 +41,7 @@ void NetworkLayerSenderFlowctrl()
 			break;
 		case sendFirstFrame:
 			L_Data_Request();//FF N_PDU
-			//wait until(stateOfCAN == SuccessSend , N_As )
+			WaitUntil(getSendState(chl),==,SendSuccess,100);//wait until(stateOfCAN == SuccessSend , N_As )
 			if()//no timeout
 			{
 				L_Data_Confirm(1,Complete);//1 = ID

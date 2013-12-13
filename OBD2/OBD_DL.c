@@ -5,7 +5,6 @@
  *      Author: zzz
  */
 #include "Common.h"
-#include "OBD_DL.h"
 #include "Std_Types.h"
 typedef enum{
 	StateA,

@@ -51,7 +51,11 @@ void L_Data_Request(
 		Formate_type Format,
 		unsigned short DLC,
 		unsigned char (* Data)[8])
-{};
+{
+
+
+
+};
 
 /*
  * Function:
