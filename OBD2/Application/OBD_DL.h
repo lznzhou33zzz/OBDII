@@ -89,33 +89,6 @@ typedef struct{
 };
 
 
-typedef struct{
-
-}PID_Type;
-
-typedef struct{
-	PID_Type PID;
-
-}CANData_type;
-
-
-
-
-
-
-
-
-typedef struct {
-	void *Rqst_SID;
-	char srvc_spcfc_data[6];
-}RqstMsgFmt_type;
-typedef struct{
-
-}PstvRspnsMsg_type;
-//typedef struct{
-//	NgtvRspnsSID;
-//	char RqstSrvcID = ;
-//}NgtvRspnsMsg_type;
 
 
 #endif /* OBD_H_ */
