@@ -26,8 +26,10 @@ typedef union{
 	struct{
 		unsigned long base_ID:11;
 		unsigned long extended_ID:18;
-		unsigned long rsv:3;
-	}Part;
+	}Ext_ID;
+	struct{
+		unsigned long ID:11;
+	}Nor_ID;
 	unsigned long whole_ID;
 }ID_type;
 
@@ -39,14 +41,14 @@ typedef enum{
 void L_Data_Request(
 		ID_type Identifier,
 		Formate_type Format,
-		unsigned short DLC,
-		unsigned char (* Data)[8]);
+		DataLth_type DLC,
+		unsigned char (* Data)[64]);
 
 void L_Data_Indication(
 		ID_type Identifier,
 		Formate_type Format,
-		unsigned short DLC,
-		unsigned char (* Data)[8]);
+		DataLth_type DLC,
+		unsigned char (* Data)[64]);
 
 void L_Data_Confirm(
 		ID_type Identifier,

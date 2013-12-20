@@ -7,10 +7,7 @@
 #include "DriverInterface.h"
 #include "Common.h"
 
-typedef enum{
-	timeout,
-	waiting
-}TimeOutState_type;
+
 
 
 static TimeOutState_type TimeOutState;

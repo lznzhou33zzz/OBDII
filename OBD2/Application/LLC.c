@@ -34,7 +34,7 @@
 
 #include "DataLink.h"
 #include "OBD_N.h"
-
+#include "DriverInterface.h"
 
 
 
@@ -49,12 +49,17 @@
 void L_Data_Request(
 		ID_type Identifier,
 		Formate_type Format,
-		unsigned short DLC,
-		unsigned char (* Data)[8])
+		DataLth_type DLC,
+		unsigned char (* Data)[64])
 {
-
-
-
+	unsigned char i;
+	CANFrame_Type data;
+	data.Identifier = Identifier.whole_ID;
+	data.Format = (unsigned char)Format;
+	data.DLC = DLC;
+	for(i = 0; i < CANLenthTable[DLC]; i++, Data++)
+		data[i] = *Data;
+	CANSend(data);
 };
 
 /*
@@ -67,8 +72,8 @@ void L_Data_Request(
 void L_Data_Indication(
 		ID_type Identifier,
 		Formate_type Format,
-		unsigned short DLC,
-		unsigned char (* Data)[8])
+		DataLth_type DLC,
+		unsigned char (* Data)[64])
 {};
 
 /*
