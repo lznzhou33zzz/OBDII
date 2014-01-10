@@ -1,26 +1,12 @@
 /*
- * OBC_N.h
+ * NetworkType.h
  *
- *  Created on: 2013年10月19日
- *      Author: zzz
+ *  Created on: 2014年1月10日
+ *      Author: zezhongzhao
  */
 
-#ifndef OBC_N_H_
-#define OBC_N_H_
-#include "OBD_DL.h"
-
-#define N_FWTmax
-#define TIMEOUT_N_As			1000
-#define TIMEOUT_N_Ar			1000
-#define TIMEOUT_B_Bs			1000
-#define TIMEOUT_N_Cr			1000
-
-
-//Error about
-#define NetLayerErrorType		unsigned short
-#define NE_OK					0
-#define NE_OVERTIME				1
-
+#ifndef NETWORK_TYPE_H_
+#define NETWORK_TYPE_H_
 
 typedef enum {
 	SF,
@@ -72,6 +58,7 @@ typedef enum{
 	Wait,
 	Overflow
 }FS_type;
+
 
 /*------------------网络层基本服务规范-----------------*/
 	/*-----------------N_USDATA------------------
@@ -273,21 +260,4 @@ typedef enum{
 
 /*--------------------网络层协议 end-------------------*/
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-#endif /* OBC_N_H_ */
+#endif /* NETWORKTYPE_H_ */

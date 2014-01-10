@@ -13,6 +13,30 @@
 
 
 
+void L_Data_Request(
+		ID_type Identifier,
+		Formate_type Format,
+		DataLth_type DLC,
+		unsigned char (* Data)[64]);
+
+void L_Data_Indication(
+		ID_type Identifier,
+		Formate_type Format,
+		DataLth_type DLC,
+		unsigned char (* Data)[64]);
+
+void L_Remote_Request (
+		ID_type Identifier,
+		Formate_type Format,
+		DataLth_type DLC);
+
+void L_Remote_Indication(
+		ID_type Identifier,
+		Formate_type Format,
+		DataLth_type DLC);
+
+
+
 
 
 #endif /* CANIF_H_ */
