@@ -8,10 +8,6 @@
 #ifndef CANIF_TYPES_H_
 #define CANIF_TYPES_H_
 
-typedef enum{
-	Complete,
-	Not_Complete
-}Transfer_Status_type;
 
 typedef enum{
 	Complete,
@@ -26,10 +22,10 @@ typedef enum {
 }DataLth_type;
 
 typedef enum{
-	base,
-	extended,
-	FDbase,
-	FDextended
+	CBFF ,//Classical Base Frame format
+	CEFF ,//Classical Extended Frame format
+	FBFF ,//FD Base Frame format
+	FEFF ,//FD Extended Frame format
 }Formate_type;
 
 typedef union{
@@ -43,8 +39,22 @@ typedef union{
 	unsigned long whole_ID;
 }ID_type;
 
+typedef struct{
+	ID_type Identifier;
+	Formate_type Format;
+	DataLth_type DLC;
+	unsigned char Data[64];
+}CanBuffer_type;
 
+typedef struct{
+	ID_type Identifier;
+	Formate_type Format;
+	DataLth_type DLC;
+}RemoteBuffer_type;
 
-
+typedef struct{
+	ID_type Identifier;
+	Transfer_Status_type Tx_Status;
+}Confirm_type;
 
 #endif /* CANIF_TYPES_H_ */

@@ -8,10 +8,15 @@
 #define CANIF_CBK_H_
 
 void L_Data_Confirm(
-		ID_type Identifier,
-		Transfer_Status_type Tx_Status);
+		Confirm_type *CurrentConfirm);
+
+void L_Data_Indication(
+		CanBuffer_type * CurrentRxData);
+
 void L_Remote_Confirm(
 		ID_type Identifier,
 		Transfer_Status_type Tx_Status);
 
+void L_Remote_Indication(
+		RemoteBuffer_type *CurrentTxRemote);
 #endif

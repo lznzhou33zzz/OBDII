@@ -10,8 +10,23 @@
 
 #define TRUE				1
 #define FALSE				0
-#define SUPPORTED		1
-#define NOT_SUPPORT		0
-#define RECEIVED		1
+#define SUPPORTED			1
+#define NOT_SUPPORT			0
+#define RECEIVED			1
 #define NOT_RECEIVED		0
+
+#define SWITCH_ON 			1
+#define SWITCH_OFF			0
+
+#define WaitUntil(a,op,b,timeout)				\
+{												\
+	startTimeOut(timeout);						\
+	while(1)									\
+	{											\
+		if(a op b) break;						\
+		if(getTimeOut()) break;					\
+	}											\
+}
+
+
 #endif /* COMMON_H_ */

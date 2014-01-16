@@ -8,6 +8,15 @@
 #ifndef NETWORK_TYPE_H_
 #define NETWORK_TYPE_H_
 
+enum {
+	idle,
+	sendFirstFrame,
+	waitSendFirstFrameSuccess,
+	waitFlowCtrlFrame,
+	sendConsecutiveFrame,
+	finishFlow,
+}NetworkLayerFlowState;
+
 typedef enum {
 	SF,
 	FF,

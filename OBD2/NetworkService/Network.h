@@ -7,6 +7,9 @@
 
 #ifndef NETWORK_H_
 #define NETWORK_H_
+#include  "CanIf_Types.h"
+#include "Std_Types.h"
+#include "Common.h"
 
 #define N_FWTmax
 #define TIMEOUT_N_As			1000
@@ -19,5 +22,9 @@
 #define NetLayerErrorType		unsigned short
 #define NE_OK					0
 #define NE_OVERTIME				1
+
+
+boolean Flowctrl_switch = SWITCH_OFF;
+
 
 #endif /* SERVICE_H_ */

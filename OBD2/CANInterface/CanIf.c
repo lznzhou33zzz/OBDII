@@ -8,7 +8,6 @@
 #include "CanIf.h"
 #include "CanIf_Cbk.h"
 
-
 /*
  * Function:
  * Description:
@@ -16,11 +15,7 @@
  * Return:
  *
  */
-void L_Data_Request(
-		ID_type Identifier,
-		Formate_type Format,
-		DataLth_type DLC,
-		unsigned char (* Data)[64])
+void L_Data_Request(CanBuffer_type * CurrentTxData)
 {}
 
 /*
@@ -30,11 +25,7 @@ void L_Data_Request(
  * Return:
  *
  */
-void L_Data_Indication(
-		ID_type Identifier,
-		Formate_type Format,
-		DataLth_type DLC,
-		unsigned char (* Data)[64])
+void L_Data_Indication(CanBuffer_type * CurrentRxData)
 {}
 
 /*
@@ -45,8 +36,7 @@ void L_Data_Indication(
  *
  */
 void L_Data_Confirm(
-		ID_type Identifier,
-		Transfer_Status_type Tx_Status)
+		Confirm_type *CurrentConfirm)
 {}
 
 /*
@@ -57,9 +47,7 @@ void L_Data_Confirm(
  *
  */
 void L_Remote_Request (
-		ID_type Identifier,
-		Formate_type Format,
-		DataLth_type DLC)
+		RemoteBuffer_type *CurrentRxRemote)
 {}
 
 /*
@@ -70,9 +58,7 @@ void L_Remote_Request (
  *
  */
 void L_Remote_Indication(
-		ID_type Identifier,
-		Formate_type Format,
-		DataLth_type DLC)
+		RemoteBuffer_type *CurrentTxRemote)
 {}
 
 /*
@@ -83,6 +69,5 @@ void L_Remote_Indication(
  *
  */
 void L_Remote_Confirm(
-		ID_type Identifier,
-		Transfer_Status_type Tx_Status)
+		Confirm_type *CurrentConfirm)
 {}
