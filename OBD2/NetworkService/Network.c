@@ -8,6 +8,13 @@
 #include "Common.h"
 #include "CanIf.h"
 #include "CanIf_Types.h"
+#include "Network_Type.h"
+#include "Network_Cfg.h"
+//
+
+
+
+
 
 /*
  * Function:
@@ -210,7 +217,10 @@ void PDU2DataLinkParameter(
  * Return:
  *
  */
-#define FlowctrlInit() 	Flowctrl_switch = SWITCH_ON;
+void SenderCtrl_Init(a)
+{
+
+}
 
 /*
  * Function:
@@ -219,18 +229,21 @@ void PDU2DataLinkParameter(
  * Return:
  *
  */
-void NetworkLayerFlowctrl()
+void SenderCtrl_Task(Sender_type currentSender,)
 {
 	N_PDU_type current_pdu;
 	unsigned short i;
 	unsigned char chl;
 	Transfer_Status_type transferStatus = Not_Complete;
 
-	switch(NetworkLayerFlowState)
+	if(senderCtrl_switch == SWITCH_OFF)
+		return;
+
+	switch(SenderState_type)
 	{
 	case idle:
-		if(Flowctrl_switch == TRUE)
-			NetworkLayerFlowState = sendFirstFrame;
+		if(senderCtrl_switch == TRUE)
+			SenderState_type = sendFirstFrame;
 		break;
 	case sendFirstFrame:
 		L_Data_Request();//FF N_PDU
@@ -239,12 +252,12 @@ void NetworkLayerFlowctrl()
 		{
 			transferStatus = Complete;
 
-			NetworkLayerFlowState = waitFlowCtrlFrame;
+			SenderState_type = waitFlowCtrlFrame;
 		}
 		else
 		{
 			L_Data_Confirm(1,transferStatus);//1 = ID
-			NetworkLayerFlowState = waitFlowCtrlFrame;
+			SenderState_type = waitFlowCtrlFrame;
 		}
 		break;
 	case waitSendFirstFrameSuccess:
@@ -255,7 +268,7 @@ void NetworkLayerFlowctrl()
 		if()//no timeout
 		{
 			L_Data_Indication();//FF N_PDU
-			NetworkLayerFlowState = sendConsecutiveFrame;
+			SenderState_type = sendConsecutiveFrame;
 		}
 		else
 		{
@@ -269,19 +282,19 @@ void NetworkLayerFlowctrl()
 			if()//no timeout
 			{
 				L_Data_Confirm(1,Complete);//1 = ID
-				NetworkLayerFlowState = waitFlowCtrlFrame;
+				SenderState_type = waitFlowCtrlFrame;
 			}
 			else
 			{
 				L_Data_Confirm(1,Not_Complete);//1 = ID
-				NetworkLayerFlowState = finishFlow;
+				SenderState_type = finishFlow;
 			}
 		}
-		NetworkLayerFlowState = finishFlow;
+		SenderState_type = finishFlow;
 		break;
 	case finishFlow:
 		if()
-			NetworkLayerFlowState = idle;
+			SenderState_type = idle;
 		else
 			;
 		break;
@@ -293,6 +306,8 @@ void NetworkLayerFlowctrl()
 
 
 
+
+
 /*
  * Function:
  * Description:
@@ -301,7 +316,8 @@ void NetworkLayerFlowctrl()
  *
  */
 void N_USDataRequest(
-		DATA_Request_type ){
+		DATA_Request_type parameter){
+	senderCtrl_Init(SWITCH_ON);
 
 }
 
@@ -314,7 +330,7 @@ void N_USDataRequest(
  *
  */
 void N_USDataConfirm(
-		DATA_Confirm_type ){
+		DATA_Confirm_type parameter){
 
 }
 
@@ -327,7 +343,7 @@ void N_USDataConfirm(
  *
  */
 void N_USDataFFIndication(
-		DATA_FF_Indication_type){
+		DATA_FF_Indication_type parameter){
 
 }
 
@@ -341,7 +357,7 @@ void N_USDataFFIndication(
  *
  */
 void N_USDataIndication(
-		DATA_Indication_type ){
+		DATA_Indication_type parameter){
 
 }
 
@@ -353,7 +369,7 @@ void N_USDataIndication(
  *
  */
 void N_ChangeParameterRequest(
-		DATA_FF_Request_type ){
+		DATA_FF_Request_type parameter){
 
 }
 
@@ -366,6 +382,6 @@ void N_ChangeParameterRequest(
  *
  */
 void N_ChangePatameterConfirm(
-		Change_Para_Confirm_type ){
+		Change_Para_Confirm_type parameter){
 
 }

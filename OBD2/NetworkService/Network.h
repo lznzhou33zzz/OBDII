@@ -7,6 +7,7 @@
 
 #ifndef NETWORK_H_
 #define NETWORK_H_
+#include "Network_Type.h"
 #include  "CanIf_Types.h"
 #include "Std_Types.h"
 #include "Common.h"
@@ -24,7 +25,7 @@
 #define NE_OVERTIME				1
 
 
-boolean Flowctrl_switch = SWITCH_OFF;
+boolean senderCtrl_switch = SWITCH_OFF;
 
 
 #endif /* SERVICE_H_ */
