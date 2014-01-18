@@ -11,16 +11,19 @@
 
 // define a sender
 typedef enum {
-	idle,
 	sendFirstFrame,
 	waitSendFirstFrameSuccess,
 	waitFlowCtrlFrame,
 	sendConsecutiveFrame,
 	finishFlow,
 }SenderState_type;
+typedef enum{
+	senderEnable ,
+	senderDisable
+}SenderEnable_type;
 typedef struct{
-	SenderState_type senderState;
-
+	SenderState_type	senderState;
+	SenderEnable_type	senderEnable;
 }Sender_type;
 
 
@@ -172,7 +175,7 @@ typedef struct{
 	Address_type N_TAtype;		//network address type
 	unsigned char N_AE;			//network address extension
 	Parameter_type Parameter;
-	unsigned char Parameter_Value;
+	unsigned short Parameter_Value;
 }DATA_FF_Request_type;
 /*--------request end---------*/
 /*---------Confirm-----------*/

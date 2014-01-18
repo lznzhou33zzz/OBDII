@@ -12,7 +12,8 @@
 #include "CanIf_Cfg.h"
 #include  "CanIf_Types.h"
 
-
+#define SendSuccess		1
+#define SendFail		0
 
 
 void L_Data_Request(

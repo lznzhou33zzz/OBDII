@@ -12,9 +12,9 @@
 #include "Network_Cfg.h"
 //
 
-
-
-
+//local variable
+Sender_type Sender;
+DATA_Request_type CurData;
 
 /*
  * Function:
@@ -217,10 +217,11 @@ void PDU2DataLinkParameter(
  * Return:
  *
  */
-void SenderCtrl_Init(a)
+void SenderCtrl_Init()
 {
-
+	CurData.Length = 1;
 }
+
 
 /*
  * Function:
@@ -229,39 +230,55 @@ void SenderCtrl_Init(a)
  * Return:
  *
  */
-void SenderCtrl_Task(Sender_type currentSender,)
+void SenderCtrl_Reset()
+{
+
+}
+
+
+/*
+ * Function:
+ * Description:
+ * Parameter:
+ * Return:
+ *
+ */
+void SenderCtrl_Task()
 {
 	N_PDU_type current_pdu;
 	unsigned short i;
-	unsigned char chl;
 	Transfer_Status_type transferStatus = Not_Complete;
 
-	if(senderCtrl_switch == SWITCH_OFF)
+	if(Sender.senderEnable == senderDisable)
 		return;
-
-	switch(SenderState_type)
+	if()//if single frame
 	{
-	case idle:
-		if(senderCtrl_switch == TRUE)
-			SenderState_type = sendFirstFrame;
-		break;
-	case sendFirstFrame:
-		L_Data_Request();//FF N_PDU
-		WaitUntil(getSendState(chl),==,SendSuccess,100);//wait until(stateOfCAN == SuccessSend , N_As )
-		if()//no timeout
-		{
-			transferStatus = Complete;
 
-			SenderState_type = waitFlowCtrlFrame;
-		}
-		else
-		{
-			L_Data_Confirm(1,transferStatus);//1 = ID
-			SenderState_type = waitFlowCtrlFrame;
-		}
+	}
+	else
+	switch(Sender.senderState)
+	{
+	case sendFirstFrame:
+		//
+		//1.start request
+		L_Data_Request();//FF N_PDU
+		//2.star N_As timeout
+
 		break;
 	case waitSendFirstFrameSuccess:
-
+		if()//N_As is timeout
+		{
+			break;
+		}
+		else if(getSendState()==SendSuccess)//N_As is not timeout, send success
+		{
+			L_Data_Confirm(1,transferStatus);
+			SenderState_type = waitFlowCtrlFrame;
+		}
+		else//N_As is not timeout, send success
+		{
+			//just wait
+		}
 		break;
 	case waitFlowCtrlFrame:
 		//wait until(stateOfCAN == SuccessReceive , N_Bs )
@@ -317,7 +334,7 @@ void SenderCtrl_Task(Sender_type currentSender,)
  */
 void N_USDataRequest(
 		DATA_Request_type parameter){
-	senderCtrl_Init(SWITCH_ON);
+	senderCtrl_Init();
 
 }
 

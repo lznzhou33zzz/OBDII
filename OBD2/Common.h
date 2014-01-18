@@ -15,8 +15,7 @@
 #define RECEIVED			1
 #define NOT_RECEIVED		0
 
-#define SWITCH_ON 			1
-#define SWITCH_OFF			0
+
 
 #define WaitUntil(a,op,b,timeout)				\
 {												\

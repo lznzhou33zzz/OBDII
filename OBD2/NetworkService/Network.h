@@ -25,7 +25,6 @@
 #define NE_OVERTIME				1
 
 
-boolean senderCtrl_switch = SWITCH_OFF;
 
 
 #endif /* SERVICE_H_ */
