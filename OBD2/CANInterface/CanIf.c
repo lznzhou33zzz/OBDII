@@ -15,7 +15,7 @@
  * Return:
  *
  */
-void L_Data_Request(CanBuffer_type * CurrentTxData)
+void L_Data_Request(L_SDU_DataReq_type * CurrentTxData)
 {}
 
 /*
@@ -25,7 +25,7 @@ void L_Data_Request(CanBuffer_type * CurrentTxData)
  * Return:
  *
  */
-void L_Data_Indication(CanBuffer_type * CurrentRxData)
+void L_Data_Indication(L_SDU_DataInd_type * CurrentRxData)
 {}
 
 /*
@@ -36,7 +36,7 @@ void L_Data_Indication(CanBuffer_type * CurrentRxData)
  *
  */
 void L_Data_Confirm(
-		Confirm_type *CurrentConfirm)
+		L_SDU_DataCfm_type *CurrentConfirm)
 {}
 
 /*
@@ -47,7 +47,7 @@ void L_Data_Confirm(
  *
  */
 void L_Remote_Request (
-		RemoteBuffer_type *CurrentRxRemote)
+		L_SDU_RemoteReq_type *CurrentRxRemote)
 {}
 
 /*
@@ -58,7 +58,7 @@ void L_Remote_Request (
  *
  */
 void L_Remote_Indication(
-		RemoteBuffer_type *CurrentTxRemote)
+		L_SDU_RemoteInd_type *CurrentTxRemote)
 {}
 
 /*
@@ -69,5 +69,5 @@ void L_Remote_Indication(
  *
  */
 void L_Remote_Confirm(
-		Confirm_type *CurrentConfirm)
+		L_SDU_RemoteCfm_type *CurrentConfirm)
 {}

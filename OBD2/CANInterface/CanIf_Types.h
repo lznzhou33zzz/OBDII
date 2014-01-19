@@ -44,17 +44,36 @@ typedef struct{
 	Formate_type Format;
 	DataLth_type DLC;
 	unsigned char Data[64];
-}CanBuffer_type;
+}L_SDU_DataReq_type;
 
 typedef struct{
 	ID_type Identifier;
 	Formate_type Format;
 	DataLth_type DLC;
-}RemoteBuffer_type;
+	unsigned char Data[64];
+}L_SDU_DataInd_type;
 
 typedef struct{
 	ID_type Identifier;
 	Transfer_Status_type Tx_Status;
-}Confirm_type;
+}L_SDU_DataCfm_type;
+
+typedef struct{
+	ID_type Identifier;
+	Formate_type Format;
+	DataLth_type DLC;
+}L_SDU_RemoteReq_type;
+
+typedef struct{
+	ID_type Identifier;
+	Formate_type Format;
+	DataLth_type DLC;
+}L_SDU_RemoteInd_type;
+
+typedef struct{
+	ID_type Identifier;
+	Transfer_Status_type Tx_Status;
+}L_SDU_RemoteCfm_type;
+
 
 #endif /* CANIF_TYPES_H_ */

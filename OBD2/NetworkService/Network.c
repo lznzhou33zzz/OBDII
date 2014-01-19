@@ -10,11 +10,18 @@
 #include "CanIf_Types.h"
 #include "Network_Type.h"
 #include "Network_Cfg.h"
-//
+//macro define
+
+//Public variable
 
 //local variable
 Sender_type Sender;
-DATA_Request_type CurData;
+N_SDU_DataReq_type CurReqData;
+
+
+
+
+
 
 /*
  * Function:
@@ -23,13 +30,29 @@ DATA_Request_type CurData;
  * Return:
  *
  */
-void PDU2DataLinkParameter(
-		N_PDU_type * current_pdu,
-		DataLinkParameter_type * current_DataLinkParameter)
+L_SDU_DataReq_type N_PDU2L_SDU(
+		N_PDU_type Current_pdu)
+{
+	L_SDU_DataReq_type  current_DataReq;
+
+	return current_DataReq;
+}
+/*
+ * Function:
+ * Description: SDU to PDUs
+ * Input Parameter:
+ * Output Parameter:
+ * Return:
+ *
+ */
+void N_SDU2N_PDUs(
+		N_SDU_DataReq_type * current_sdu,
+		N_PDU_type * n_pdu_output
+		)
 {
 	short i;
-	switch(current_pdu->N_AI.AddressType){
-	case normal_address:
+	if(current_sdu->Mtype == diagnostics){
+
 		//1. Set ID
 //		if(current_pdu->N_AI.N_TAtype == phyiscal){
 //			current_DataLinkParameter->ID = (current_pdu->N_AI.N_SA
@@ -52,41 +75,41 @@ void PDU2DataLinkParameter(
 		//3. Set Data
 		switch (current_pdu->N_PCI.PCIType){
 		case SF:
-			current_DataLinkParameter->DATA[0] = current_pdu->N_PCI.PCI.BYTE.byte1;
+			current_DataLinkParameter->Data[0] = current_pdu->N_PCI.PCI.BYTE.byte1;
 			for(i = 1; i < 8; i++)
-				current_DataLinkParameter->DATA[i] = current_pdu->N_DATA.Nml_SF_Data[i-1];
+				current_DataLinkParameter->Data[i] = current_pdu->N_DATA.Nml_SF_Data[i-1];
 			break;
 		case FF:
-			current_DataLinkParameter->DATA[0] = current_pdu->N_PCI.PCI.BYTE.byte1;
-			current_DataLinkParameter->DATA[1] = current_pdu->N_PCI.PCI.BYTE.byte2;
+			current_DataLinkParameter->Data[0] = current_pdu->N_PCI.PCI.BYTE.byte1;
+			current_DataLinkParameter->Data[1] = current_pdu->N_PCI.PCI.BYTE.byte2;
 			for(i = 2; i < 8; i++)
-				current_DataLinkParameter->DATA[i] = current_pdu->N_DATA.Nml_SF_Data[i-2];
+				current_DataLinkParameter->Data[i] = current_pdu->N_DATA.Nml_SF_Data[i-2];
 			break;
 		case CF:
-			current_DataLinkParameter->DATA[0] = current_pdu->N_PCI.PCI.BYTE.byte1;
+			current_DataLinkParameter->Data[0] = current_pdu->N_PCI.PCI.BYTE.byte1;
 			for(i = 1; i < 8; i++)
-				current_DataLinkParameter->DATA[i] = current_pdu->N_DATA.Nml_SF_Data[i-1];
+				current_DataLinkParameter->Data[i] = current_pdu->N_DATA.Nml_SF_Data[i-1];
 			break;
 		case FC:
-			current_DataLinkParameter->DATA[0] = current_pdu->N_PCI.PCI.BYTE.byte1;
-			current_DataLinkParameter->DATA[1] = current_pdu->N_PCI.PCI.BYTE.byte2;
-			current_DataLinkParameter->DATA[2] = current_pdu->N_PCI.PCI.BYTE.byte3;
+			current_DataLinkParameter->Data[0] = current_pdu->N_PCI.PCI.BYTE.byte1;
+			current_DataLinkParameter->Data[1] = current_pdu->N_PCI.PCI.BYTE.byte2;
+			current_DataLinkParameter->Data[2] = current_pdu->N_PCI.PCI.BYTE.byte3;
 			for(i = 3; i < 8; i++)
-					current_DataLinkParameter->DATA[i] = current_pdu->N_DATA.Nml_SF_Data[i-3];
+					current_DataLinkParameter->Data[i] = current_pdu->N_DATA.Nml_SF_Data[i-3];
 			break;
 		}
-		break;
+
 	case normal_fixed_address:
 		//1. Set ID
 		if(current_pdu->N_AI.N_TAtype == phyiscal){
-			current_DataLinkParameter->ID = (current_pdu->N_AI.N_SA
+			current_DataLinkParameter->Identifier = (current_pdu->N_AI.N_SA
 			|=((unsigned long)current_pdu->N_AI.N_TA) << 8
 			|=((unsigned long)0xDA<<16)
 			|=((unsigned long)0x18<<24)
 					);
 		}
 		else if(current_pdu->N_AI.N_TAtype == functional){
-			current_DataLinkParameter->ID = (current_pdu->N_AI.N_SA
+			current_DataLinkParameter->Identifier = (current_pdu->N_AI.N_SA
 			|=((unsigned long)current_pdu->N_AI.N_TA) << 8
 			|=((unsigned long)0xDB<<16)
 			|=((unsigned long)0x18<<24)
@@ -99,27 +122,27 @@ void PDU2DataLinkParameter(
 		//3. Set Data
 		switch (current_pdu->N_PCI.PCIType){
 		case SF:
-			current_DataLinkParameter->DATA[0] = current_pdu->N_PCI.PCI.BYTE.byte1;
+			current_DataLinkParameter->Data[0] = current_pdu->N_PCI.PCI.BYTE.byte1;
 			for(i = 1; i < 8; i++)
-				current_DataLinkParameter->DATA[i] = current_pdu->N_DATA.Nml_SF_Data[i-1];
+				current_DataLinkParameter->Data[i] = current_pdu->N_DATA.Nml_SF_Data[i-1];
 			break;
 		case FF:
-			current_DataLinkParameter->DATA[0] = current_pdu->N_PCI.PCI.BYTE.byte1;
-			current_DataLinkParameter->DATA[1] = current_pdu->N_PCI.PCI.BYTE.byte2;
+			current_DataLinkParameter->Data[0] = current_pdu->N_PCI.PCI.BYTE.byte1;
+			current_DataLinkParameter->Data[1] = current_pdu->N_PCI.PCI.BYTE.byte2;
 			for(i = 2; i < 8; i++)
-				current_DataLinkParameter->DATA[i] = current_pdu->N_DATA.Nml_SF_Data[i-2];
+				current_DataLinkParameter->Data[i] = current_pdu->N_DATA.Nml_SF_Data[i-2];
 			break;
 		case CF:
-			current_DataLinkParameter->DATA[0] = current_pdu->N_PCI.PCI.BYTE.byte1;
+			current_DataLinkParameter->Data[0] = current_pdu->N_PCI.PCI.BYTE.byte1;
 			for(i = 1; i < 8; i++)
-				current_DataLinkParameter->DATA[i] = current_pdu->N_DATA.Nml_SF_Data[i-1];
+				current_DataLinkParameter->Data[i] = current_pdu->N_DATA.Nml_SF_Data[i-1];
 			break;
 		case FC:
-			current_DataLinkParameter->DATA[0] = current_pdu->N_PCI.PCI.BYTE.byte1;
-			current_DataLinkParameter->DATA[1] = current_pdu->N_PCI.PCI.BYTE.byte2;
-			current_DataLinkParameter->DATA[2] = current_pdu->N_PCI.PCI.BYTE.byte3;
+			current_DataLinkParameter->Data[0] = current_pdu->N_PCI.PCI.BYTE.byte1;
+			current_DataLinkParameter->Data[1] = current_pdu->N_PCI.PCI.BYTE.byte2;
+			current_DataLinkParameter->Data[2] = current_pdu->N_PCI.PCI.BYTE.byte3;
 			for(i = 3; i < 8; i++)
-					current_DataLinkParameter->DATA[i] = current_pdu->N_DATA.Nml_SF_Data[i-3];
+					current_DataLinkParameter->Data[i] = current_pdu->N_DATA.Nml_SF_Data[i-3];
 			break;
 		}
 		break;
@@ -128,44 +151,44 @@ void PDU2DataLinkParameter(
 		//2. Set DLC
 		current_DataLinkParameter->DLC = 8;
 		//3. Set Data
-		current_DataLinkParameter->DATA[0] = current_pdu->N_AI.N_TA;
+		current_DataLinkParameter->Data[0] = current_pdu->N_AI.N_TA;
 		switch (current_pdu->N_PCI.PCIType){
 		case SF:
-			current_DataLinkParameter->DATA[1] = current_pdu->N_PCI.PCI.BYTE.byte1;
+			current_DataLinkParameter->Data[1] = current_pdu->N_PCI.PCI.BYTE.byte1;
 			for(i = 2; i < 8; i++)
-				current_DataLinkParameter->DATA[i] = current_pdu->N_DATA.Nml_SF_Data[i-2];
+				current_DataLinkParameter->Data[i] = current_pdu->N_DATA.Nml_SF_Data[i-2];
 			break;
 		case FF:
-			current_DataLinkParameter->DATA[1] = current_pdu->N_PCI.PCI.BYTE.byte1;
-			current_DataLinkParameter->DATA[2] = current_pdu->N_PCI.PCI.BYTE.byte2;
+			current_DataLinkParameter->Data[1] = current_pdu->N_PCI.PCI.BYTE.byte1;
+			current_DataLinkParameter->Data[2] = current_pdu->N_PCI.PCI.BYTE.byte2;
 			for(i = 3; i < 8; i++)
-				current_DataLinkParameter->DATA[i] = current_pdu->N_DATA.Nml_SF_Data[i-3];
+				current_DataLinkParameter->Data[i] = current_pdu->N_DATA.Nml_SF_Data[i-3];
 			break;
 		case CF:
-			current_DataLinkParameter->DATA[1] = current_pdu->N_PCI.PCI.BYTE.byte1;
+			current_DataLinkParameter->Data[1] = current_pdu->N_PCI.PCI.BYTE.byte1;
 			for(i = 2; i < 8; i++)
-				current_DataLinkParameter->DATA[i] = current_pdu->N_DATA.Nml_SF_Data[i-2];
+				current_DataLinkParameter->Data[i] = current_pdu->N_DATA.Nml_SF_Data[i-2];
 			break;
 		case FC:
-			current_DataLinkParameter->DATA[1] = current_pdu->N_PCI.PCI.BYTE.byte1;
-			current_DataLinkParameter->DATA[2] = current_pdu->N_PCI.PCI.BYTE.byte2;
-			current_DataLinkParameter->DATA[3] = current_pdu->N_PCI.PCI.BYTE.byte3;
+			current_DataLinkParameter->Data[1] = current_pdu->N_PCI.PCI.BYTE.byte1;
+			current_DataLinkParameter->Data[2] = current_pdu->N_PCI.PCI.BYTE.byte2;
+			current_DataLinkParameter->Data[3] = current_pdu->N_PCI.PCI.BYTE.byte3;
 			for(i = 4; i < 8; i++)
-					current_DataLinkParameter->DATA[i] = current_pdu->N_DATA.Nml_SF_Data[i-4];
+					current_DataLinkParameter->Data[i] = current_pdu->N_DATA.Nml_SF_Data[i-4];
 			break;
 		}
 		break;
 	case mixed_address:
 		//1. Set ID
 		if(current_pdu->N_AI.N_TAtype == phyiscal){
-			current_DataLinkParameter->ID = (current_pdu->N_AI.N_SA
+			current_DataLinkParameter->Identifier = (current_pdu->N_AI.N_SA
 			|=((unsigned long)current_pdu->N_AI.N_TA) << 8
 			|=((unsigned long)0xCD<<16)
 			|=((unsigned long)0x18<<24)
 					);
 		}
 		else if(current_pdu->N_AI.N_TAtype == functional){
-			current_DataLinkParameter->ID = (current_pdu->N_AI.N_SA
+			current_DataLinkParameter->Identifier = (current_pdu->N_AI.N_SA
 			|=((unsigned long)current_pdu->N_AI.N_TA) << 8
 			|=((unsigned long)0xCE<<16)
 			|=((unsigned long)0x18<<24)
@@ -176,30 +199,30 @@ void PDU2DataLinkParameter(
 		//2. Set DLC
 		current_DataLinkParameter->DLC = 8;
 		//3. Set Data
-		current_DataLinkParameter->DATA[0] = current_pdu->N_AI.N_AE;
+		current_DataLinkParameter->Data[0] = current_pdu->N_AI.N_AE;
 		switch (current_pdu->N_PCI.PCIType){
 		case SF:
-			current_DataLinkParameter->DATA[1] = current_pdu->N_PCI.PCI.BYTE.byte1;
+			current_DataLinkParameter->Data[1] = current_pdu->N_PCI.PCI.BYTE.byte1;
 			for(i = 2; i < 8; i++)
-				current_DataLinkParameter->DATA[i] = current_pdu->N_DATA.Nml_SF_Data[i-2];
+				current_DataLinkParameter->Data[i] = current_pdu->N_DATA.Nml_SF_Data[i-2];
 			break;
 		case FF:
-			current_DataLinkParameter->DATA[1] = current_pdu->N_PCI.PCI.BYTE.byte1;
-			current_DataLinkParameter->DATA[2] = current_pdu->N_PCI.PCI.BYTE.byte2;
+			current_DataLinkParameter->Data[1] = current_pdu->N_PCI.PCI.BYTE.byte1;
+			current_DataLinkParameter->Data[2] = current_pdu->N_PCI.PCI.BYTE.byte2;
 			for(i = 3; i < 8; i++)
-				current_DataLinkParameter->DATA[i] = current_pdu->N_DATA.Nml_SF_Data[i-3];
+				current_DataLinkParameter->Data[i] = current_pdu->N_DATA.Nml_SF_Data[i-3];
 			break;
 		case CF:
-			current_DataLinkParameter->DATA[1] = current_pdu->N_PCI.PCI.BYTE.byte1;
+			current_DataLinkParameter->Data[1] = current_pdu->N_PCI.PCI.BYTE.byte1;
 			for(i = 2; i < 8; i++)
-				current_DataLinkParameter->DATA[i] = current_pdu->N_DATA.Nml_SF_Data[i-2];
+				current_DataLinkParameter->Data[i] = current_pdu->N_DATA.Nml_SF_Data[i-2];
 			break;
 		case FC:
-			current_DataLinkParameter->DATA[1] = current_pdu->N_PCI.PCI.BYTE.byte1;
-			current_DataLinkParameter->DATA[2] = current_pdu->N_PCI.PCI.BYTE.byte2;
-			current_DataLinkParameter->DATA[3] = current_pdu->N_PCI.PCI.BYTE.byte3;
+			current_DataLinkParameter->Data[1] = current_pdu->N_PCI.PCI.BYTE.byte1;
+			current_DataLinkParameter->Data[2] = current_pdu->N_PCI.PCI.BYTE.byte2;
+			current_DataLinkParameter->Data[3] = current_pdu->N_PCI.PCI.BYTE.byte3;
 			for(i = 4; i < 8; i++)
-				current_DataLinkParameter->DATA[i] = current_pdu->N_DATA.Nml_SF_Data[i-4];
+				current_DataLinkParameter->Data[i] = current_pdu->N_DATA.Nml_SF_Data[i-4];
 			break;
 		}
 		break;
@@ -253,6 +276,9 @@ void SenderCtrl_Task()
 		return;
 	if()//if single frame
 	{
+		//
+		//
+		L_Data_Request();
 
 	}
 	else
@@ -310,10 +336,7 @@ void SenderCtrl_Task()
 		SenderState_type = finishFlow;
 		break;
 	case finishFlow:
-		if()
-			SenderState_type = idle;
-		else
-			;
+
 		break;
 	default:
 		break;

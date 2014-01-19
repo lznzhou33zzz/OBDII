@@ -110,7 +110,7 @@ typedef struct{
 	unsigned char N_AE;			//network address extension
 	unsigned char *MessageData;
 	unsigned short Length;
-}DATA_Request_type;
+}N_SDU_DataReq_type;
 /*--------request end---------*/
 
 /*----------confirm-----------*/
@@ -121,7 +121,7 @@ typedef struct{
 	Address_type N_TAtype;
 	unsigned char N_AE;
 	N_Result_type N_Result;
-}DATA_Confirm_type;
+}N_SDU_DataCfg_type;
 /*--------confirm end---------*/
 /*---------indication-----------*/
 typedef struct{
@@ -132,7 +132,7 @@ typedef struct{
 	unsigned char N_AE;			//network address extension
 	unsigned char *MessageData;
 	unsigned short Length;
-}DATA_Indication_type;
+}N_SDU_DataInd_type;
 /*--------indication end---------*/
 /*------------N_USDATA end------------*/
 
@@ -151,7 +151,7 @@ typedef struct{
 	Address_type N_TAtype;		//network address type
 	unsigned char N_AE;			//network address extension
 	unsigned short Length;
-}DATA_FF_Indication_type;
+}N_SDU_DataFFInd_type;
 /*--------indication end---------*/
 /*------------N_USDATA_FF end------------*/
 
@@ -176,7 +176,7 @@ typedef struct{
 	unsigned char N_AE;			//network address extension
 	Parameter_type Parameter;
 	unsigned short Parameter_Value;
-}DATA_FF_Request_type;
+}N_SDU_DataFFReq_type;
 /*--------request end---------*/
 /*---------Confirm-----------*/
 typedef struct{
@@ -187,7 +187,7 @@ typedef struct{
 	unsigned char N_AE;			//network address extension
 	Parameter_type Parameter;
 	Result_ChangeParameter_type Result_changeParameter;
-}Change_Para_Confirm_type;
+}N_SDU_ChgParaCfm_type;
 /*--------Confirm end---------*/
 /*-------------N_ChangeParameter end------------*/
 /*------------------Network layer service end------------------*/
