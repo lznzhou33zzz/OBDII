@@ -17,7 +17,7 @@
 //local variable
 Sender_type Sender;
 N_SDU_DataReq_type CurReqData;
-
+N_PDU_type  PDU_queue[32];
 
 
 
@@ -31,49 +31,34 @@ N_SDU_DataReq_type CurReqData;
  *
  */
 L_SDU_DataReq_type N_PDU2L_SDU(
-		N_PDU_type Current_pdu)
+		N_PDU_type * Current_pdu)
 {
 	L_SDU_DataReq_type  current_DataReq;
-
-	return current_DataReq;
-}
-/*
- * Function:
- * Description: SDU to PDUs
- * Input Parameter:
- * Output Parameter:
- * Return:
- *
- */
-void N_SDU2N_PDUs(
-		N_SDU_DataReq_type * current_sdu,
-		N_PDU_type * n_pdu_output
-		)
-{
 	short i;
-	if(current_sdu->Mtype == diagnostics){
 
-		//1. Set ID
-//		if(current_pdu->N_AI.N_TAtype == phyiscal){
-//			current_DataLinkParameter->ID = (current_pdu->N_AI.N_SA
-//			|=((unsigned long)current_pdu->N_AI.N_TA) << 8
-//			|=((unsigned long)0xDA<<16)
-//			|=((unsigned long)0x18<<24)
-//					);
-//		}
-//		else if(current_pdu->N_AI.N_TAtype == functional){
-//			current_DataLinkParameter->ID = (current_pdu->N_AI.N_SA
-//			|=((unsigned long)current_pdu->N_AI.N_TA) << 8
-//			|=((unsigned long)0xDB<<16)
-//			|=((unsigned long)0x18<<24)
-//					);
-//		}
-//		else
-//		{;}
-		//2. Set DLC
-		current_DataLinkParameter->DLC = 8;
-		//3. Set Data
-		switch (current_pdu->N_PCI.PCIType){
+
+	//1. Set ID
+	current_DataReq->Identifier.Ext_ID.OBD.P = default_P;
+	current_DataReq->Identifier.Ext_ID.OBD.R = default_R;
+	current_DataReq->Identifier.Ext_ID.OBD.DP = default_DP;
+	if(Current_pdu->N_AI.N_TAtype == functional
+			)
+	{
+		current_DataReq->Identifier.Ext_ID.OBD.PF = NOR_FIX_FUN_PF;
+	}
+	else if(Current_pdu->N_AI.N_TAtype == phyiscal
+			)
+	{
+		current_DataReq->Identifier.Ext_ID.OBD.PF = NOR_FIX_PHY_PF;
+	}
+	else
+	{}
+	current_DataReq->Identifier.Ext_ID.OBD.PS = Current_pdu->N_AI.N_SA;
+	current_DataReq->Identifier.Ext_ID.OBD.SA = Current_pdu->N_AI.N_SA;
+	//2. Set DLC
+	current_DataReq.DLC = 8;
+	//3. Set Data
+		switch (Current_pdu->N_PCI.PCIType){
 		case SF:
 			current_DataLinkParameter->Data[0] = current_pdu->N_PCI.PCI.BYTE.byte1;
 			for(i = 1; i < 8; i++)
@@ -228,6 +213,33 @@ void N_SDU2N_PDUs(
 		break;
 	default:
 		break;
+
+
+
+
+
+
+	return current_DataReq;
+}
+/*
+ * Function:
+ * Description: SDU to PDUs
+ * Input Parameter:
+ * Output Parameter:
+ * Return:
+ *
+ */
+void N_SDU2N_PDUs(
+		N_SDU_DataReq_type * current_sdu,
+		N_PDU_type * n_pdu_output
+		)
+{
+	if(current_sdu->Mtype == diagnostics){
+
+	}
+	else if(current_sdu->Mtype == remote_diagnostics)
+	{
+
 	}
 }
 
@@ -356,7 +368,7 @@ void SenderCtrl_Task()
  *
  */
 void N_USDataRequest(
-		DATA_Request_type parameter){
+		N_SDU_DataReq_type parameter){
 	senderCtrl_Init();
 
 }
@@ -370,7 +382,7 @@ void N_USDataRequest(
  *
  */
 void N_USDataConfirm(
-		DATA_Confirm_type parameter){
+		N_SDU_DataCfm_type parameter){
 
 }
 
@@ -383,7 +395,7 @@ void N_USDataConfirm(
  *
  */
 void N_USDataFFIndication(
-		DATA_FF_Indication_type parameter){
+		N_SDU_DataFFInd_type parameter){
 
 }
 
@@ -397,7 +409,7 @@ void N_USDataFFIndication(
  *
  */
 void N_USDataIndication(
-		DATA_Indication_type parameter){
+		N_SDU_DataInd_type parameter){
 
 }
 
@@ -409,7 +421,7 @@ void N_USDataIndication(
  *
  */
 void N_ChangeParameterRequest(
-		DATA_FF_Request_type parameter){
+		N_SDU_DataFFReq_type parameter){
 
 }
 
@@ -422,6 +434,6 @@ void N_ChangeParameterRequest(
  *
  */
 void N_ChangePatameterConfirm(
-		Change_Para_Confirm_type parameter){
+		N_SDU_ChgParaCfm_type parameter){
 
 }

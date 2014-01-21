@@ -29,9 +29,19 @@ typedef enum{
 }Formate_type;
 
 typedef union{
-	struct{
-		unsigned long base_ID:11;
-		unsigned long extended_ID:18;
+	union{
+		struct{
+			unsigned long base_ID:11;
+			unsigned long extended_ID:18;
+		};
+		struct{
+			unsigned char P:3;
+			unsigned char R:1;
+			unsigned char DP:1;
+			unsigned char PF:8;
+			unsigned char PS:8;
+			unsigned char SA:8;
+		}OBD;
 	}Ext_ID;
 	struct{
 		unsigned long ID:11;

@@ -121,7 +121,7 @@ typedef struct{
 	Address_type N_TAtype;
 	unsigned char N_AE;
 	N_Result_type N_Result;
-}N_SDU_DataCfg_type;
+}N_SDU_DataCfm_type;
 /*--------confirm end---------*/
 /*---------indication-----------*/
 typedef struct{
