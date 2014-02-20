@@ -11,19 +11,24 @@
 
 // define a sender
 typedef enum {
-	sendFirstFrame,
-	waitSendFirstFrameSuccess,
-	waitFlowCtrlFrame,
-	sendConsecutiveFrame,
-	finishFlow,
+	FF_req,
+	FF_con,
+	FC_ind,
+	CF_req,
+	CF_con,
+	Sender_Deinit
 }SenderState_type;
 typedef enum{
 	senderEnable ,
 	senderDisable
 }SenderEnable_type;
+typedef unsigned long SenderTxedDataMark;
 typedef struct{
 	SenderState_type	senderState;
 	SenderEnable_type	senderEnable;
+	SenderTxedDataMark 	senderTxedDataMark;//the index number of MessageData
+	N_SDU_DataReq_type	senderTxData;
+	N_Result_type		senderErrorState;
 }Sender_type;
 
 
@@ -69,10 +74,10 @@ typedef enum {
 }N_Result_type;
 
 typedef enum {
-	N_OK,
-	N_RX_ON,
-	N_WRONG_PARAMETER,
-	N_WRONG_VALUE
+	ParaN_OK,
+	ParaN_RX_ON,
+	ParaN_WRONG_PARAMETER,
+	ParaN_WRONG_VALUE
 }Result_ChangeParameter_type;
 
 typedef enum{

@@ -8,6 +8,11 @@
 #ifndef NETWORK_CFG_H_
 #define NETWORK_CFG_H_
 
+#define SenderMaxNumber		(2)
+#define MaxLenthOfSDUData	(4096)
+
+
+
 #define default_P 			0x6;
 #define	default_R 			0x0;
 #define default_DP 			0x0;
@@ -16,5 +21,8 @@
 #define MIX_FUN_PF 			0xCD;
 #define MIX_PHY_PF 			0xCE;
 SenderState_type Sender1_State;
+
+
+
 
 #endif /* NETWORK_CFD_H_ */
