@@ -11,6 +11,7 @@
 
 // define a sender
 typedef enum {
+	SF_req,
 	FF_req,
 	FF_con,
 	FC_ind,
@@ -23,15 +24,35 @@ typedef enum{
 	senderDisable
 }SenderEnable_type;
 typedef unsigned long SenderTxedDataMark;
+typedef unsigned char SequenceNumber;
 typedef struct{
 	SenderState_type	senderState;
-	SenderEnable_type	senderEnable;
+	SenderEnable_type	senderEnablestate;
 	SenderTxedDataMark 	senderTxedDataMark;//the index number of MessageData
+	SequenceNumber		sequenceNumber;
 	N_SDU_DataReq_type	senderTxData;
 	N_Result_type		senderErrorState;
 }Sender_type;
+//end define sender
 
 
+// define a receiver
+typedef enum {
+
+}ReceiverState_type;
+typedef enum{
+	receiverEnable ,
+	receiverDisable
+}ReceiverEnable_type;
+typedef unsigned long ReceiverRxedDataMark;
+typedef struct{
+	ReceiverState_type		ReceiverState;
+	ReceiverEnable_type		ReceiverEnable;
+	ReceiverRxedDataMark 	ReceiverRxedDataMark;//the index number of MessageData
+	N_SDU_DataInd_type		ReceiverRxData;
+	N_Result_type			ReceiverErrorState;
+}Receiver_type;
+//end define receiver
 
 
 
@@ -87,122 +108,6 @@ typedef enum{
 }FS_type;
 
 
-/*----------------------------Network layer service------------------------*/
-/*-----------------N_USDATA------------------
- * request:这项基本服务请求传输带有“长度”字节的“信息
- * 		数据”，从发送器到接收器，同时通过在N_SA、N_TA、
- * 		N_TAtype、和N_AE中地址信息进行硬件认证。每次只要
- * 		N_USData.request发生了，网络层就要标识向服务用
- * 		户传输信息成功（或失败），通过看N_USData.confirm
- * 		这项服务是否被请求了。
- * confirm:此服务是网络层发出。基本的服务确定
- * 		N_USData.request是否已经完成，通过在N_SA、
- * 		N_TA、N_TAtype、和N_AE中地址信息进行认证。参数
- * 		<N_Result>提供服务请求的状态
- * indication:此服务也是由网络层发出。这项基本的服务
- * 		指示<N_Result>事件和传递来自一个对等的协议硬件的带
- * 		有“长度”字节的“信息数据”到相邻的上层，这些带有“长度”
- * 		字节的“信息数据”通过在N_SA、N_TA、N_TAtype、和
- * 		N_AE中地址信息进行认证,<MessageData>和<Length>
- * 		参数仅仅在<N_Result>等于N_OK的情况下有效
- * ------------------------------------------*/
-/*---------request-----------*/
-typedef struct{
-	Message_type Mtype;
-	unsigned char N_SA;
-	unsigned char N_TA;
-	Address_type N_TAtype;		//network address type
-	unsigned char N_AE;			//network address extension
-	unsigned char *MessageData;
-	unsigned short Length;
-}N_SDU_DataReq_type;
-/*--------request end---------*/
-
-/*----------confirm-----------*/
-typedef struct{
-	Message_type Mtype;
-	unsigned char N_SA;
-	unsigned char N_TA;
-	Address_type N_TAtype;
-	unsigned char N_AE;
-	N_Result_type N_Result;
-}N_SDU_DataCfm_type;
-/*--------confirm end---------*/
-/*---------indication-----------*/
-typedef struct{
-	Message_type Mtype;
-	unsigned char N_SA;
-	unsigned char N_TA;
-	Address_type N_TAtype;		//network address type
-	unsigned char N_AE;			//network address extension
-	unsigned char *MessageData;
-	unsigned short Length;
-}N_SDU_DataInd_type;
-/*--------indication end---------*/
-/*------------N_USDATA end------------*/
-
-
-/*--------------N_USDATA_FF---------------
- * indication:此服务由网络层发出。基本的服务表示相邻上
- * 		层接收到一个分段信息的第一帧，来自一个对等的协议硬件，通
- * 		过在N_SA、N_TA、N_TAtype、和N_AE中地址信息进行
- * 		认证
- * --------------------------------------*/
-/*---------indication-----------*/
-typedef struct{
-	Message_type Mtype;
-	unsigned char N_SA;
-	unsigned char N_TA;
-	Address_type N_TAtype;		//network address type
-	unsigned char N_AE;			//network address extension
-	unsigned short Length;
-}N_SDU_DataFFInd_type;
-/*--------indication end---------*/
-/*------------N_USDATA_FF end------------*/
-
-
-/*--------------N_ChangeParameter---------------
- * request:此项服务是用来请求对局部协议硬件上的内部参数值进行修改。参
- *		此项服务是用来请求对局部协议硬件上的内部参数值进行修改。参数
- *		修改总是可能的，除了接收到（N_USData_FF.indication）
- *		的第一帧之后和直到接收到（N_USData.indication）的通信
- *		信息的结束
- * confirm:此项基本服务确认N_ChangeParameter.Confirmation
- * 		此项基本服务确认N_ChangeParameter.Confirmation服务
- * 		申请信息的完成，通过在N_SA、N_TA、N_TAtype、和N_AE中地址
- * 		信息进行认证
- * */
-/*---------request-----------*/
-typedef struct{
-	Message_type Mtype;
-	unsigned char N_SA;
-	unsigned char N_TA;
-	Address_type N_TAtype;		//network address type
-	unsigned char N_AE;			//network address extension
-	Parameter_type Parameter;
-	unsigned short Parameter_Value;
-}N_SDU_DataFFReq_type;
-/*--------request end---------*/
-/*---------Confirm-----------*/
-typedef struct{
-	Message_type Mtype;
-	unsigned char N_SA;
-	unsigned char N_TA;
-	Address_type N_TAtype;		//network address type
-	unsigned char N_AE;			//network address extension
-	Parameter_type Parameter;
-	Result_ChangeParameter_type Result_changeParameter;
-}N_SDU_ChgParaCfm_type;
-/*--------Confirm end---------*/
-/*-------------N_ChangeParameter end------------*/
-/*------------------Network layer service end------------------*/
-
-
-
-
-
-
-
 /*-------------------------------protocol data unit-------------------------------*/
 	typedef struct{
 		unsigned char N_SA;
@@ -211,39 +116,36 @@ typedef struct{
 		unsigned char N_AE;			//network address extension
 	}N_AI_type;
 	typedef struct{
+		unsigned char N_PCItype:4;
 		union{
 			struct{
 				struct{
-					unsigned char N_PCItype:4 = SF;
 					unsigned char SF_DL:4;
 				}BIT;
 			}SF_PCI;//SingleFrame
 			struct{
 				struct{
-					unsigned char N_PCItype:4 = FF;
 					unsigned short FF_DL:12;
 				}BIT;
 			}FF_PCI;//FirstFrame
 			struct{
 				struct{
-					unsigned char N_PCItype = CF;
+					unsigned char SN :4;
 				}BIT;
 			}CF_PCI;//ConsecutiveFrame
 			struct{
 				struct{
-					unsigned char N_PCItype:4 = FC;
 					FS_type FS:4;
 					unsigned char BS;
 					unsigned char STmin;
 				}BIT;
 			}FC_PCI;//FlowControl
 			struct {
-				unsigned char byte1;
-				unsigned char byte2;
-				unsigned char byte3;
-			}BYTE;
+				unsigned char Nybble1:4;
+				unsigned char Nybble23;
+				unsigned char Nybble45;
+			}Nybbles;
 		}PCI;
-		PCIType_type PCIType;
 	}N_PCI_type;
 	typedef union{
 		//normal addressing
@@ -276,5 +178,106 @@ typedef struct {
 /*----------------- N_PDU end-----------------*/
 
 /*------------------------------protocol data unit end-------------------------*/
+
+
+
+/*----------------------------Network layer service------------------------*/
+/*-----------------N_USDATA------------------
+ * request:这项基本服务请求传输带有“长度”字节的“信息
+ * 		数据”，从发送器到接收器，同时通过在N_SA、N_TA、
+ * 		N_TAtype、和N_AE中地址信息进行硬件认证。每次只要
+ * 		N_USData.request发生了，网络层就要标识向服务用
+ * 		户传输信息成功（或失败），通过看N_USData.confirm
+ * 		这项服务是否被请求了。
+ * confirm:此服务是网络层发出。基本的服务确定
+ * 		N_USData.request是否已经完成，通过在N_SA、
+ * 		N_TA、N_TAtype、和N_AE中地址信息进行认证。参数
+ * 		<N_Result>提供服务请求的状态
+ * indication:此服务也是由网络层发出。这项基本的服务
+ * 		指示<N_Result>事件和传递来自一个对等的协议硬件的带
+ * 		有“长度”字节的“信息数据”到相邻的上层，这些带有“长度”
+ * 		字节的“信息数据”通过在N_SA、N_TA、N_TAtype、和
+ * 		N_AE中地址信息进行认证,<MessageData>和<Length>
+ * 		参数仅仅在<N_Result>等于N_OK的情况下有效
+ * ------------------------------------------*/
+/*---------request-----------*/
+typedef struct{
+	Message_type Mtype;
+	N_AI_type N_AI;
+	unsigned char *MessageData;
+	unsigned short Length;
+}N_SDU_DataReq_type;
+/*--------request end---------*/
+
+/*----------confirm-----------*/
+typedef struct{
+	Message_type Mtype;
+	N_AI_type N_AI;
+	N_Result_type N_Result;
+}N_SDU_DataCfm_type;
+/*--------confirm end---------*/
+/*---------indication-----------*/
+typedef struct{
+	Message_type Mtype;
+	N_AI_type N_AI;
+	unsigned char *MessageData;
+	unsigned short Length;
+}N_SDU_DataInd_type;
+/*--------indication end---------*/
+/*------------N_USDATA end------------*/
+
+
+/*--------------N_USDATA_FF---------------
+ * indication:此服务由网络层发出。基本的服务表示相邻上
+ * 		层接收到一个分段信息的第一帧，来自一个对等的协议硬件，通
+ * 		过在N_SA、N_TA、N_TAtype、和N_AE中地址信息进行
+ * 		认证
+ * --------------------------------------*/
+/*---------indication-----------*/
+typedef struct{
+	Message_type Mtype;
+	N_AI_type N_AI;
+	unsigned short Length;
+}N_SDU_DataFFInd_type;
+/*--------indication end---------*/
+/*------------N_USDATA_FF end------------*/
+
+
+/*--------------N_ChangeParameter---------------
+ * request:此项服务是用来请求对局部协议硬件上的内部参数值进行修改。参
+ *		此项服务是用来请求对局部协议硬件上的内部参数值进行修改。参数
+ *		修改总是可能的，除了接收到（N_USData_FF.indication）
+ *		的第一帧之后和直到接收到（N_USData.indication）的通信
+ *		信息的结束
+ * confirm:此项基本服务确认N_ChangeParameter.Confirmation
+ * 		此项基本服务确认N_ChangeParameter.Confirmation服务
+ * 		申请信息的完成，通过在N_SA、N_TA、N_TAtype、和N_AE中地址
+ * 		信息进行认证
+ * */
+/*---------request-----------*/
+typedef struct{
+	Message_type Mtype;
+	N_AI_type N_AI;
+	Parameter_type Parameter;
+	unsigned short Parameter_Value;
+}N_SDU_DataFFReq_type;
+/*--------request end---------*/
+/*---------Confirm-----------*/
+typedef struct{
+	Message_type Mtype;
+	N_AI_type N_AI;
+	Parameter_type Parameter;
+	Result_ChangeParameter_type Result_changeParameter;
+}N_SDU_ChgParaCfm_type;
+/*--------Confirm end---------*/
+/*-------------N_ChangeParameter end------------*/
+/*------------------Network layer service end------------------*/
+
+
+
+
+
+
+
 
 #endif /* NETWORKTYPE_H_ */
