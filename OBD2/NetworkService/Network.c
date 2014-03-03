@@ -347,7 +347,7 @@ void SenderCtrl_Reset()
  * Return:
  *
  */
-void SenderCtrl_Task()
+void SenderCtrl()
 {
 	N_PDU_type current_pdu;
 	unsigned short i,currnetSenderNO = 0;
@@ -364,10 +364,11 @@ void SenderCtrl_Task()
 		switch(Sender.senderState)
 		{
 		case SF_req:
+			//1.get a N_PDU from N_SDU
 			getN_PDUfromN_SDU(Sender[currnetSenderNO],&currentN_PDU);
-
-
-
+			currentL_SDU = N_PDU2L_SDU(&currentN_PDU,currentL_SDU);
+			L_Data_Request(currentL_SDU);
+			Sender[currnetSenderNO].senderState = Sender_Deinit;
 			break;
 		case FF_req:
 
@@ -376,7 +377,7 @@ void SenderCtrl_Task()
 				//1.get a N_PDU from N_SDU
 				getN_PDUfromN_SDU(Sender[currnetSenderNO],&currentN_PDU);
 				//2.N_PDU to L_SDU
-				currentL_SDU = N_PDU2L_SDU(&currentN_PDU);
+				currentL_SDU = N_PDU2L_SDU(&currentN_PDU,currentL_SDU);
 				//3.start request
 				L_Data_Request(currentL_SDU);
 				//4.star N_As timeout
@@ -387,13 +388,13 @@ void SenderCtrl_Task()
 			{}
 			break;
 		case FF_con:
-			if()//N_As is timeout
+			if(0)//N_As is timeout
 			{
 				if(Sender[currnetSenderNO].senderErrorState != N_OK)
 				Sender[currnetSenderNO].senderErrorState = N_TIMEOUT_A;
 				break;
 			}
-			else if(getSendState()==SendSuccess)//N_As is not timeout, send success
+			else if(Sender[currnetSenderNO].senderErrorState == )//N_As is not timeout, send success
 			{
 				L_Data_Confirm(1,transferStatus);
 				SenderState_type = waitFlowCtrlFrame;

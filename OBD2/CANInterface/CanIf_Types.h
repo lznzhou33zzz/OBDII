@@ -44,7 +44,7 @@ typedef union{
 		}OBD;
 	}Ext_ID;
 	struct{
-		unsigned long ID:11;
+		unsigned long CAN_ID:11;
 	}Nor_ID;
 	unsigned long whole_ID;
 }ID_type;
