@@ -7,9 +7,9 @@
 
 #ifndef NETWORK_TYPE_H_
 #define NETWORK_TYPE_H_
+#include "Network_Cfg.h"
 
-
-// define a sender
+// define a request
 typedef enum {
 	SF_req,
 	FF_req,
@@ -17,8 +17,8 @@ typedef enum {
 	FC_ind,
 	CF_req,
 	CF_con,
-	Sender_Deinit
-}SenderState_type;
+	req_reset
+}ReqState_type;
 typedef enum{
 	senderEnable ,
 	senderDisable
@@ -26,35 +26,46 @@ typedef enum{
 typedef unsigned long SenderTxedDataMark;
 typedef unsigned char SequenceNumber;
 typedef struct{
-	SenderState_type	senderState;
-	SenderEnable_type	senderEnablestate;
-	SenderTxedDataMark 	senderTxedDataMark;//the index number of MessageData
+	ReqState_type	ReqState;
+	SenderEnable_type	ReqEnableState;
+	SenderTxedDataMark 	ReqTxedDataMark;//the index number of MessageData
 	SequenceNumber		sequenceNumber;
-	N_SDU_DataReq_type	senderTxData;
-	N_Result_type		senderErrorState;
-}Sender_type;
-//end define sender
+	N_SDU_DataReq_type	ReqTxData;
+	N_Result_type		ReqErrorState;
+}Request_type;
+//end define request
 
 
-// define a receiver
+// define a response
 typedef enum {
-
-}ReceiverState_type;
+	FF_ind,
+	FC_req,
+	FC_con,
+	CF_ind,
+	res_reset
+}ResponseState_type;
 typedef enum{
 	receiverEnable ,
 	receiverDisable
-}ReceiverEnable_type;
-typedef unsigned long ReceiverRxedDataMark;
+}ResponseEnable_type;
+typedef unsigned long ResponseRxedDataMark;
 typedef struct{
-	ReceiverState_type		ReceiverState;
-	ReceiverEnable_type		ReceiverEnable;
-	ReceiverRxedDataMark 	ReceiverRxedDataMark;//the index number of MessageData
-	N_SDU_DataInd_type		ReceiverRxData;
-	N_Result_type			ReceiverErrorState;
-}Receiver_type;
-//end define receiver
+	ResponseState_type		ResState;
+	ResponseEnable_type		ResEnableState;
+	ResponseRxedDataMark 	ResRxedDataMark;//the index number of MessageData
+	N_SDU_DataInd_type		ResRxData;
+	N_Result_type			ResErrorState;
+}Response_type;
+//end define response
 
-
+//define session
+typedef unsigned short SessRunningMark_type;
+typedef struct{
+	Request_type request;
+	Response_type response[ReponseMaxNumber];
+	SessRunningMark_type SessRunningMark;
+}Session_type;
+//end define session
 
 typedef enum {
 	SF,
@@ -274,9 +285,25 @@ typedef struct{
 /*------------------Network layer service end------------------*/
 
 
-
-
-
+typedef enum{
+	DataReq,
+	DataCfm,
+	DataInd,
+	DataFFInd,
+	DataFFReq,
+	ChgParaCfm
+}SDUtype_Type;
+typedef struct{
+	union{
+		N_SDU_DataReq_type 		DataReqMsg;
+		N_SDU_DataCfm_type 		DataCfmMsg;
+		N_SDU_DataInd_type 		DataIndMsg;
+		N_SDU_DataFFInd_type 	DataFFIndMsg;
+		N_SDU_DataFFReq_type 	DataFFReqMsg;
+		N_SDU_ChgParaCfm_type 	ChgParaCfmMsg;
+	};
+	SDUtype_Type SDUtype;
+}N_SDU_Type;
 
 
 

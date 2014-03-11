@@ -25,6 +25,8 @@
 #define NE_OVERTIME				1
 
 
-
-
+extern N_Result_type NewSender();
+extern inline inline Request_type ReqState_get();
+extern void RequestCtrl(N_SDU_Type);
+extern void ResponseCtrl(N_SDU_Type);
 #endif /* SERVICE_H_ */

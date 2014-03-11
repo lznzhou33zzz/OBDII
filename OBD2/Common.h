@@ -7,6 +7,8 @@
 
 #ifndef COMMON_H_
 #define COMMON_H_
+#include "Network_Type.h"
+
 
 #define TRUE				1
 #define FALSE				0
@@ -26,6 +28,7 @@
 		if(getTimeOut()) break;					\
 	}											\
 }
+
 
 
 #endif /* COMMON_H_ */

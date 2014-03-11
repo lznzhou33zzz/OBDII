@@ -8,8 +8,7 @@
 #ifndef NETWORK_CFG_H_
 #define NETWORK_CFG_H_
 
-#define SenderMaxNumber		(2)
-#define ReceiverMaxNumber	(2)
+#define ReponseMaxNumber	(2)
 #define MaxLenthOfSDUData	(4096)
 
 
