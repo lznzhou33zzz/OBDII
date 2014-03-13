@@ -17,7 +17,7 @@ typedef enum {
 	FC_ind,
 	CF_req,
 	CF_con,
-	req_reset
+	req_ready
 }ReqState_type;
 typedef enum{
 	senderEnable ,
@@ -45,8 +45,8 @@ typedef enum {
 	res_reset
 }ResponseState_type;
 typedef enum{
-	receiverEnable ,
-	receiverDisable
+	ResponseEnable ,
+	ResponseDisable
 }ResponseEnable_type;
 typedef unsigned long ResponseRxedDataMark;
 typedef struct{
@@ -59,7 +59,10 @@ typedef struct{
 //end define response
 
 //define session
-typedef unsigned short SessRunningMark_type;
+typedef enum{
+	running,
+	stoped
+}SessRunningMark_type;
 typedef struct{
 	Request_type request;
 	Response_type response[ReponseMaxNumber];
@@ -305,6 +308,10 @@ typedef struct{
 	SDUtype_Type SDUtype;
 }N_SDU_Type;
 
-
+typedef enum {
+	sess_request,
+	sess_response,
+	sess_cbk,
+}SessMassageState;
 
 #endif /* NETWORKTYPE_H_ */
