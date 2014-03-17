@@ -9,6 +9,13 @@
 #define NETWORK_TYPE_H_
 #include "Network_Cfg.h"
 
+typedef enum{
+	ContinueToSend,
+	Wait,
+	Overflow
+}FS_type;
+
+
 // define a request
 typedef enum {
 	req_ready,
@@ -50,6 +57,7 @@ typedef enum{
 }ResponseEnable_type;
 typedef unsigned long ResponseRxedDataMark;
 typedef struct{
+	FS_type					ResFlowstate;
 	ResponseState_type		ResState;
 	ResponseEnable_type		ResEnableState;
 	ResponseRxedDataMark 	ResRxedDataMark;//the index number of MessageData
@@ -121,11 +129,7 @@ typedef enum {
 	ParaN_WRONG_VALUE
 }Result_ChangeParameter_type;
 
-typedef enum{
-	ContinueToSend,
-	Wait,
-	Overflow
-}FS_type;
+
 
 
 /*-------------------------------protocol data unit-------------------------------*/

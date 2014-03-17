@@ -14,6 +14,8 @@
 
 #pragma noregsave(Task)
 
+
+#define SessResCtrl(a)
 #define CAN_TSK_STACK_SIZE           0x0400U
 #define CAN_TSK_PRIORITY             5U
 
@@ -211,7 +213,7 @@ inline Response_type ResState_get(unsigned short index)
  * Return:
  *
  */
-inline N_PDU_type FCFrame_generate()
+inline N_PDU_type FCFrame_generate(unsigned short ResponseIndex)
 {
 	N_PDU_type FC_Frame;
 
@@ -221,7 +223,8 @@ inline N_PDU_type FCFrame_generate()
 
 	FC_Frame.N_PCI.PCI.FC_PCI.BIT.BS = session.parameter.BS;
 	FC_Frame.N_PCI.PCI.FC_PCI.BIT.STmin = session.parameter.STmin;
-	FC_Frame.N_PCI.PCI.FC_PCI.BIT.FS = ;
+
+	FC_Frame.N_PCI.PCI.FC_PCI.BIT.FS = session.response[ResponseIndex].ResFlowstate;
 
 	return FC_Frame;
 }
@@ -368,7 +371,7 @@ N_Result_type ResponseCtrl(SessMessage_type currentN_PDU)
 				session.response[i].ResRxedDataMark ++;
 			}
 			//FC_request
-			FC_N_pdu = FCFrame_generate();
+			FC_N_pdu = FCFrame_generate(i);
 			N_PDU2L_SDU(&FC_N_pdu,&FC_L_sdu);
 			session.response[i].ResState = FC_con;
 			break;
@@ -386,8 +389,7 @@ N_Result_type ResponseCtrl(SessMessage_type currentN_PDU)
 						= currentN_PDU.pdu_msg.N_DATA.NF_FF_Data[j];
 			}
 			if()
-				//FC_request
-				FC_N_pdu = FCFrame_generate();
+				FC_N_pdu = FCFrame_generate(i);
 				N_PDU2L_SDU(&FC_N_pdu,&FC_L_sdu);
 			break;
 		case res_reset:
