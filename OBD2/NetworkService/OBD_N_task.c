@@ -117,27 +117,27 @@ N_PDU_type getN_PDUfromN_SDU(
 	unsigned long i;
 
 	//1. set N_AI
-	N_pdu_output.N_AI.N_AE = current_request->senderTxData.N_AI.N_AE;
-	N_pdu_output.N_AI.N_SA = current_request->senderTxData.N_AI.N_SA;
-	N_pdu_output.N_AI.N_TA = current_request->senderTxData.N_AI.N_TA;
-	N_pdu_output.N_AI.N_TAtype = current_request->senderTxData.N_AI.N_TAtype;
+	N_pdu_output.N_AI.N_AE = current_request->ReqTxData.N_AI.N_AE;
+	N_pdu_output.N_AI.N_SA = current_request->ReqTxData.N_AI.N_SA;
+	N_pdu_output.N_AI.N_TA = current_request->ReqTxData.N_AI.N_TA;
+	N_pdu_output.N_AI.N_TAtype = current_request->ReqTxData.N_AI.N_TAtype;
 	if(current_request->ReqState == SF_req)
 	{
 		//2. set N_PCI
 		N_pdu_output.N_PCI.N_PCItype = SF;
-		N_pdu_output.N_PCI.PCI.SF_PCI.BIT.SF_DL = current_request->senderTxData.Length;
+		N_pdu_output.N_PCI.PCI.SF_PCI.BIT.SF_DL = current_request->ReqTxData.Length;
 		//3. set data
-		for(i = 0; i < N_pdu_output.N_PCI.PCI.SF_PCI.BIT.SF_DL; i++,current_request->senderTxedDataMark)
+		for(i = 0; i < N_pdu_output.N_PCI.PCI.SF_PCI.BIT.SF_DL; i++,current_request->ReqTxedDataMark)
 		{
 			N_pdu_output.N_DATA.NF_SF_Data[i] =
-				*(current_request->senderTxData.MessageData + current_request->senderTxedDataMark);
+				*(current_request->ReqTxData.MessageData + current_request->ReqTxedDataMark);
 		}
 	}
 	else if(current_request->ReqState == FF_req)
 	{
 		//2. set N_PCI
 		N_pdu_output.N_PCI.N_PCItype = FF;
-		N_pdu_output.N_PCI.PCI.FF_PCI.BIT.FF_DL = current_request->senderTxData.Length;
+		N_pdu_output.N_PCI.PCI.FF_PCI.BIT.FF_DL = current_request->ReqTxData.Length;
 
 	}
 	else if(current_request->ReqState == CF_req)
@@ -147,11 +147,11 @@ N_PDU_type getN_PDUfromN_SDU(
 		N_pdu_output.N_PCI.PCI.CF_PCI.BIT.SN = current_request->sequenceNumber + 1;
 		//3. set data
 		for(i = 0;
-				i < (current_request->senderTxData.Length - SenderTxedDataMark < 7)?
-				(current_request->senderTxData.Length - SenderTxedDataMark):7; i++,current_request->senderTxedDataMark++)
+				i < (current_request->ReqTxData.Length - ResponseRxedDataMark < 7)?
+				(current_request->ReqTxData.Length - ResponseRxedDataMark):7; i++,current_request->senderTxedDataMark++)
 		{
 			N_pdu_output.N_DATA.NF_CF_Data[i] =
-					*(current_request->senderTxData.MessageData + SenderTxedDataMark);
+					*(current_request->ReqTxData.MessageData + ResponseRxedDataMark);
 		}
 	}
 	else
@@ -191,6 +191,42 @@ inline Request_type ReqState_get()
 {
 	return session.request;
 }
+
+/*
+ * Function:
+ * Description:
+ * Parameter:
+ * Return:
+ *
+ */
+inline Response_type ResState_get(unsigned short index)
+{
+	return session.response[index];
+}
+
+/*
+ * Function:
+ * Description:
+ * Parameter:
+ * Return:
+ *
+ */
+inline N_PDU_type FCFrame_generate()
+{
+	N_PDU_type FC_Frame;
+
+	FC_Frame.N_AI.N_SA = session.request.ReqTxData.N_AI.N_SA;
+	FC_Frame.N_AI.N_TA = session.request.ReqTxData.N_AI.N_TA;
+	FC_Frame.N_AI.N_TAtype = session.request.ReqTxData.N_AI.N_TAtype;
+
+	FC_Frame.N_PCI.PCI.FC_PCI.BIT.BS = session.parameter.BS;
+	FC_Frame.N_PCI.PCI.FC_PCI.BIT.STmin = session.parameter.STmin;
+	FC_Frame.N_PCI.PCI.FC_PCI.BIT.FS = ;
+
+	return FC_Frame;
+}
+
+
 /*
  * Function:
  * Description:
@@ -211,7 +247,7 @@ void ReqCtrl_Reset()
  * Return:
  *
  */
-N_Result_type RequestCtrl(N_PDU_type currentN_PDU)
+N_Result_type RequestCtrl(SessMessage_type currentN_PDU)
 {
 	unsigned short i,currnetSenderNO = 0;
 	N_Result_type result;
@@ -221,7 +257,7 @@ N_Result_type RequestCtrl(N_PDU_type currentN_PDU)
 
 
 	if(session.request.ReqEnableState == senderDisable)
-		return;
+		return N_ERROR;
 
 	switch(session.request.ReqState)
 	{
@@ -306,29 +342,54 @@ N_Result_type RequestCtrl(N_PDU_type currentN_PDU)
 }
 
 
-N_Result_type ResponseCtrl(N_PDU_type currentN_PDU)
+N_Result_type ResponseCtrl(SessMessage_type currentN_PDU)
 {
-	unsigned short i;
+	unsigned short i,j;
 	N_Result_type result;
+	N_PDU_type FC_N_pdu;
+	L_SDU_DataReq_type FC_L_sdu;
+
 	result = N_ERROR;
 
 
 	for(i = 0; i < ReponseMaxNumber;i++){
-		if(currentN_PDU.N_AI.N_TA != session.request.ReqTxData.N_AI.N_SA
-				|| session.response[i].ResEnableState == ResponseDisable)
-			continue;
+		if(currentN_PDU.pdu_msg.N_AI.N_TA != session.request.ReqTxData.N_AI.N_SA)
+			break;
 
 		switch(session.response[i].ResState){
 		case FF_ind:
-			session.response[i].ResRxData.N_AI = currentN_PDU.N_AI;
-			currentN_PDU.N_DATA.NF_FF_Data
+			//FF_indication
+			session.response[i].ResRxData.N_AI = currentN_PDU.pdu_msg.N_AI;
+			session.response[i].ResRxData.Length = currentN_PDU.pdu_msg.N_PCI.PCI.FF_PCI.BIT.FF_DL;
+			for(j = 0 ;j < 6; j++)
+			{
+				*(session.response.ResRxData.MessageData + session.response[i].ResRxedDataMark)
+						= currentN_PDU.pdu_msg.N_DATA.NF_FF_Data[j];
+				session.response[i].ResRxedDataMark ++;
+			}
+			//FC_request
+			FC_N_pdu = FCFrame_generate();
+			N_PDU2L_SDU(&FC_N_pdu,&FC_L_sdu);
+			session.response[i].ResState = FC_con;
 			break;
-		case FC_req:
-				break;
 		case FC_con:
+			session.response[i].ResState = CF_ind;
 				break;
 		case CF_ind:
-				break;
+
+			for(j = 0 ;j < 7; j++,session.response[i].ResRxedDataMark++)
+			{
+				if(session.response[i].ResRxedDataMark
+						>= session.response[i].ResRxData.Length)
+					break;
+				*(session.response.ResRxData.MessageData + session.response[i].ResRxedDataMark)
+						= currentN_PDU.pdu_msg.N_DATA.NF_FF_Data[j];
+			}
+			if()
+				//FC_request
+				FC_N_pdu = FCFrame_generate();
+				N_PDU2L_SDU(&FC_N_pdu,&FC_L_sdu);
+			break;
 		case res_reset:
 				break;
 		}
@@ -391,14 +452,24 @@ void N_ChangePatameterConfirm(
 }
 
 
+/*
+ * Function:
+ * Description:
+ * Parameter:
+ * Return:
+ *
+ */
+void N_USDataIndication(
+		N_SDU_DataInd_type parameter){
 
+}
 
 
 
 void Diag_Sess_Task(VP_INT exinf)
 {
 /* task processing */
-	static N_PDU_type sess_msg;
+	static SessMessage_type sess_msg;
 	static SessMassageState sessState;
 
 	for(;;)
@@ -408,16 +479,16 @@ void Diag_Sess_Task(VP_INT exinf)
 		{
 		case sess_request:
 			RequestCtrl(sess_msg);
-			if(ReqState_get().ReqState == req_reset)
+			if(ReqState_get().ReqState == req_complete)
 				sessState = sess_response;
 			break;
 		case sess_response:
 			ResponseCtrl(sess_msg);
-			if(sender_get().ReqState == Sender_reset)
-				sessState = sess_response;
-			break;
-		case sess_cbk:
+			if(ResState_get().ResState == res_reset)
+			{
 
+
+			}
 			break;
 		}
 	}

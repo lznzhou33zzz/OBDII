@@ -11,24 +11,25 @@
 
 // define a request
 typedef enum {
+	req_ready,
 	SF_req,
 	FF_req,
 	FF_con,
 	FC_ind,
 	CF_req,
 	CF_con,
-	req_ready
+	req_complete
 }ReqState_type;
 typedef enum{
 	senderEnable ,
 	senderDisable
-}SenderEnable_type;
-typedef unsigned long SenderTxedDataMark;
+}ReqEnable_type;
+typedef unsigned long ReqTxedDataMark;
 typedef unsigned char SequenceNumber;
 typedef struct{
 	ReqState_type	ReqState;
-	SenderEnable_type	ReqEnableState;
-	SenderTxedDataMark 	ReqTxedDataMark;//the index number of MessageData
+	ReqEnable_type	ReqEnableState;
+	ReqTxedDataMark 	ReqTxedDataMark;//the index number of MessageData
 	SequenceNumber		sequenceNumber;
 	N_SDU_DataReq_type	ReqTxData;
 	N_Result_type		ReqErrorState;
@@ -39,7 +40,6 @@ typedef struct{
 // define a response
 typedef enum {
 	FF_ind,
-	FC_req,
 	FC_con,
 	CF_ind,
 	res_reset
@@ -64,6 +64,12 @@ typedef enum{
 	stoped
 }SessRunningMark_type;
 typedef struct{
+	unsigned char BS;
+	unsigned char STmin;
+}SessionParameter_type;
+
+typedef struct{
+	SessionParameter_type parameter;
 	Request_type request;
 	Response_type response[ReponseMaxNumber];
 	SessRunningMark_type SessRunningMark;
@@ -166,22 +172,22 @@ typedef enum{
 		unsigned char Nml_SF_Data[7];//SingleFrame
 		unsigned char Nml_FF_Data[6];//FirstFrame
 		unsigned char Nml_CF_Data[7];//ConsecutiveFrame
-		unsigned char Nml_FC_Data[5];//FlowControl
+
 		//Normal fixed addressing
 		unsigned char NF_SF_Data[7];//SingleFrame
 		unsigned char NF_FF_Data[6];//FirstFrame
 		unsigned char NF_CF_Data[7];//ConsecutiveFrame
-		unsigned char NF_FC_Data[5];//FlowControl
+
 		//Extended addressing
 		unsigned char Ext_SF_Data[6];//SingleFrame
 		unsigned char Ext_FF_Data[5];//FirstFrame
 		unsigned char Ext_CF_Data[6];//ConsecutiveFrame
-		unsigned char Ext_FC_Data[4];//FlowControl
+
 		//Mixed addressing
 		unsigned char Mix_SF_Data[7];//SingleFrame
 		unsigned char Mix_FF_Data[6];//FirstFrame
 		unsigned char Mix_CF_Data[7];//ConsecutiveFrame
-		unsigned char Mix_FC_Data[5];//FlowControl
+
 	}N_DATA_type;
 /*------------------- N_PDU ------------------*/
 typedef struct {
@@ -310,8 +316,16 @@ typedef struct{
 
 typedef enum {
 	sess_request,
-	sess_response,
-	sess_cbk,
+	sess_response
 }SessMassageState;
+
+
+typedef union{
+	N_SDU_Type sdu_msg;
+	N_PDU_type pdu_msg;
+}SessMessage_type;
+
+
+
 
 #endif /* NETWORKTYPE_H_ */

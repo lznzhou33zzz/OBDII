@@ -33,14 +33,4 @@ void N_USDataFFIndication(
 
 
 
-/*
- * Function:
- * Description:
- * Parameter:
- * Return:
- *
- */
-void N_USDataIndication(
-		N_SDU_DataInd_type parameter){
 
-}
