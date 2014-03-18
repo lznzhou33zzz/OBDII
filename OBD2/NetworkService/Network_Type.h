@@ -56,11 +56,12 @@ typedef enum{
 	ResponseDisable
 }ResponseEnable_type;
 typedef unsigned long ResponseRxedDataMark;
+
 typedef struct{
 	FS_type					ResFlowstate;
 	ResponseState_type		ResState;
 	ResponseEnable_type		ResEnableState;
-	ResponseRxedDataMark 	ResRxedDataMark;//the index number of MessageData
+	ResponseRxedDataMark 	ResRxedDataCounter;//the index number of MessageData
 	N_SDU_DataInd_type		ResRxData;
 	N_Result_type			ResErrorState;
 }Response_type;

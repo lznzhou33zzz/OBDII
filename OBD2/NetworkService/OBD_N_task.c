@@ -16,8 +16,8 @@
 
 
 #define SessResCtrl(a)
-#define CAN_TSK_STACK_SIZE           0x0400U
-#define CAN_TSK_PRIORITY             5U
+#define OBD_N_TSK_STACK_SIZE           0x0400U
+#define OBD_N_TSK_PRIORITY             5U
 
 Session_type session;
 N_SDU_DataReq_type curReqData;
@@ -150,7 +150,7 @@ N_PDU_type getN_PDUfromN_SDU(
 		//3. set data
 		for(i = 0;
 				i < (current_request->ReqTxData.Length - ResponseRxedDataMark < 7)?
-				(current_request->ReqTxData.Length - ResponseRxedDataMark):7; i++,current_request->senderTxedDataMark++)
+				(current_request->ReqTxData.Length - ResponseRxedDataMark):7; i++,current_request->ReqTxedDataMark++)
 		{
 			N_pdu_output.N_DATA.NF_CF_Data[i] =
 					*(current_request->ReqTxData.MessageData + ResponseRxedDataMark);
@@ -366,9 +366,9 @@ N_Result_type ResponseCtrl(SessMessage_type currentN_PDU)
 			session.response[i].ResRxData.Length = currentN_PDU.pdu_msg.N_PCI.PCI.FF_PCI.BIT.FF_DL;
 			for(j = 0 ;j < 6; j++)
 			{
-				*(session.response.ResRxData.MessageData + session.response[i].ResRxedDataMark)
+				*(session.response.ResRxData.MessageData + session.response[i].ResRxedDataCounter)
 						= currentN_PDU.pdu_msg.N_DATA.NF_FF_Data[j];
-				session.response[i].ResRxedDataMark ++;
+				session.response[i].ResRxedDataCounter ++;
 			}
 			//FC_request
 			FC_N_pdu = FCFrame_generate(i);
@@ -380,17 +380,20 @@ N_Result_type ResponseCtrl(SessMessage_type currentN_PDU)
 				break;
 		case CF_ind:
 
-			for(j = 0 ;j < 7; j++,session.response[i].ResRxedDataMark++)
+			for(j = 0 ;j < 7; j++,session.response[i].ResRxedDataCounter++)
 			{
-				if(session.response[i].ResRxedDataMark
+				if(session.response[i].ResRxedDataCounter
 						>= session.response[i].ResRxData.Length)
 					break;
-				*(session.response.ResRxData.MessageData + session.response[i].ResRxedDataMark)
+				*(session.response.ResRxData.MessageData + session.response[i].ResRxedDataCounter)
 						= currentN_PDU.pdu_msg.N_DATA.NF_FF_Data[j];
 			}
-			if()
+			if(session.response[i].ResRxedDataCounter % session.parameter.BS == 0
+					&& session.response[i].ResRxedDataCounter < session.response[i].ResRxData.Length)
+			{
 				FC_N_pdu = FCFrame_generate(i);
 				N_PDU2L_SDU(&FC_N_pdu,&FC_L_sdu);
+			}
 			break;
 		case res_reset:
 				break;
@@ -531,7 +534,7 @@ static sint32_t Diag_GetMsg(SessMsgDataType *msg)
 }
 
 
-CANTsk_ReturnType CAN_Task_Init(void)
+OBDTsk_ReturnType OBD_Task_Init(void)
 {
 	T_CTSK CreateTsk;
 	T_CMBF CreateMbf;
@@ -540,8 +543,8 @@ CANTsk_ReturnType CAN_Task_Init(void)
 	/* create can auto baudrate detection task */
 	CreateTsk.tskatr = TA_HLNG | TA_COP1;
 	CreateTsk.exinf = (VP_INT) NULL;
-	CreateTsk.task = (FP) CAN_Task;
-	CreateTsk.itskpri = CAN_TSK_PRIORITY;
+	CreateTsk.task = (FP) OBD_N_Task;
+	CreateTsk.itskpri = OBD_N_TSK_PRIORITY;
 	CreateTsk.stksz = CAN_TSK_STACK_SIZE;
 	pStackBase = Mem_Allocate(CAN_TSK_STACK_SIZE, FALSE, TRUE);
 	CreateTsk.stk = pStackBase;
