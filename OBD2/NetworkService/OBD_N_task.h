@@ -23,8 +23,13 @@
 #define NE_OK					0
 #define NE_OVERTIME				1
 
+#define OBD_SESS_TSK_ERR_OK                  0
+#define OBD_SESS_ERR_OS_CFG              (-1)
+#define OBD_SESS_ERR_PARA                (-2)
+
+typedef sint32 OBDSessTsk_ReturnType;
 
 
-static ID OsIdMainMbfOBDNetSess;
+
 
 #endif /* OBD_N_TASK_H_ */

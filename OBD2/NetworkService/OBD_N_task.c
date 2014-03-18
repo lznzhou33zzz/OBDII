@@ -1,11 +1,8 @@
-#include <machine.h>
 #include "Std_Types.h"
 #include "misratypes.h"
 #include "kernel.h"
 #include "mem.h"
-#include "Session_Type.h"
-#include "Common.h"
-#include "Network.h"
+#include "OBD_N_task.h"
 #include "CanIf.h"
 #include "CanIf_Types.h"
 #include "Network_Type.h"
@@ -15,9 +12,13 @@
 #pragma noregsave(Task)
 
 
-#define SessResCtrl(a)
+//#define SessResCtrl(a)
 #define OBD_N_TSK_STACK_SIZE           0x0400U
 #define OBD_N_TSK_PRIORITY             5U
+
+static void* pStackBase;
+static ID OsIdMainMbfOBDNetSess;
+static ID OsIdMainTskOBDNetSess;
 
 Session_type session;
 N_SDU_DataReq_type curReqData;
@@ -112,15 +113,15 @@ N_Result_type N_PDU2L_SDU(
  *
  */
 N_PDU_type getN_PDUfromN_SDU(
-		Request_type * current_request
+		Request_type  current_request
 		)
 {
 	N_PDU_type N_pdu_output;
 	unsigned long i;
 
 	//1. set N_AI
-	N_pdu_output.N_AI.N_AE = current_request->ReqTxData.N_AI.N_AE;
-	N_pdu_output.N_AI.N_SA = current_request->ReqTxData.N_AI.N_SA;
+	N_pdu_output.N_AI.N_AE = current_request.ReqTxData.N_AI.N_AE;
+	N_pdu_output.N_AI.N_SA = current_request.ReqTxData.N_AI.N_SA;
 	N_pdu_output.N_AI.N_TA = current_request->ReqTxData.N_AI.N_TA;
 	N_pdu_output.N_AI.N_TAtype = current_request->ReqTxData.N_AI.N_TAtype;
 	if(current_request->ReqState == SF_req)
@@ -471,7 +472,7 @@ void N_USDataIndication(
 
 
 
-void Diag_Sess_Task(VP_INT exinf)
+void OBD_Sess_Task(VP_INT exinf)
 {
 /* task processing */
 	static SessMessage_type sess_msg;
@@ -506,12 +507,12 @@ void Diag_Sess_Task(VP_INT exinf)
 
 
 
-static sint32_t Diag_GetMsg(SessMsgDataType *msg)
+static sint32_t Diag_GetMsg(SessMessage_type *msg)
 {
 	ER_UINT msgsz;
-	SessMsgDataType msgbuf;
+	SessMessage_type msgbuf;
 
-	msgsz = rcv_mbf(OsIdMainTskDiag,msgbuf);
+	msgsz = rcv_mbf(OsIdMainTskOBDNetSess,msgbuf);
 
 	switch(msgsz)
 	{
@@ -534,7 +535,7 @@ static sint32_t Diag_GetMsg(SessMsgDataType *msg)
 }
 
 
-OBDTsk_ReturnType OBD_Task_Init(void)
+OBDSessTsk_ReturnType OBD_Task_Init(void)
 {
 	T_CTSK CreateTsk;
 	T_CMBF CreateMbf;
@@ -543,18 +544,18 @@ OBDTsk_ReturnType OBD_Task_Init(void)
 	/* create can auto baudrate detection task */
 	CreateTsk.tskatr = TA_HLNG | TA_COP1;
 	CreateTsk.exinf = (VP_INT) NULL;
-	CreateTsk.task = (FP) OBD_N_Task;
+	CreateTsk.task = (FP) OBD_Sess_Task;
 	CreateTsk.itskpri = OBD_N_TSK_PRIORITY;
-	CreateTsk.stksz = CAN_TSK_STACK_SIZE;
-	pStackBase = Mem_Allocate(CAN_TSK_STACK_SIZE, FALSE, TRUE);
+	CreateTsk.stksz = OBD_N_TSK_STACK_SIZE;
+	pStackBase = Mem_Allocate(OBD_N_TSK_STACK_SIZE, FALSE, TRUE);
 	CreateTsk.stk = pStackBase;
 	ErrCode = acre_tsk(&CreateTsk);
 	if (ErrCode <= 0U) {
 		Mem_Free(pStackBase);
-		return CANTSK_ERR_OS_CFG;
+		return OBD_SESS_ERR_OS_CFG;
 	}
 	else {
-		OsIdMainTskCan = (ID) ErrCode;
+		OsIdMainTskOBDNetSess = (ID) ErrCode;
 	}
 
 	/* Message buffer for auto baudrate detection */
@@ -566,11 +567,11 @@ OBDTsk_ReturnType OBD_Task_Init(void)
 		OsIdMainMbfOBDNetSess = (ID) ErrCode;
 	}
 	else {
-		OsIdMainMbfCan = 0U;
-		del_tsk(OsIdMainTskCan);
+		OsIdMainMbfOBDNetSess = 0U;
+		del_tsk(OsIdMainTskOBDNetSess);
 		return -1;
 	}
 
 	/* start task */
-	sta_tsk(OsIdMainTskCan, 0);
+	sta_tsk(OsIdMainTskOBDNetSess, 0);
 }
