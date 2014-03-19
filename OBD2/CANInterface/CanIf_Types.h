@@ -1,4 +1,5 @@
 /*
+/*
  * CanIf_Types.h
  *
  *  Created on: 2013Äê12ÔÂ19ÈÕ
@@ -33,7 +34,7 @@ typedef union{
 		struct{
 			unsigned long base_ID:11;
 			unsigned long extended_ID:18;
-		};
+		}CAN_ID;
 		struct{
 			unsigned char P:3;
 			unsigned char R:1;

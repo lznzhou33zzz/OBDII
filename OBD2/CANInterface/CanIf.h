@@ -1,4 +1,5 @@
 /*
+/*
  * CanIf.h
  *
  *  Created on: 2013Äê12ÔÂ19ÈÕ
@@ -16,13 +17,11 @@
 #define SendFail		0
 
 
-void L_Data_Request(
-		CanBuffer_type * CurrentTxData);
+void L_Data_Request(L_SDU_DataReq_type  CurrentTxData);
 
 
 
-void L_Remote_Request (
-		RemoteBuffer_type *CurrentRxRemote);
+void L_Remote_Request (L_SDU_RemoteReq_type CurrentRxRemote);
 
 
 

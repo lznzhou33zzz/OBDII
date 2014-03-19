@@ -1,4 +1,5 @@
 /*
+/*
  * CanIf_Cbk.h
  *
  *  Created on: 2013Äê12ÔÂ19ÈÕ
@@ -8,15 +9,14 @@
 #define CANIF_CBK_H_
 
 void L_Data_Confirm(
-		Confirm_type *CurrentConfirm);
+		L_SDU_DataCfm_type CurrentConfirm);
 
 void L_Data_Indication(
-		CanBuffer_type * CurrentRxData);
+		L_SDU_DataInd_type  CurrentRxData);
 
 void L_Remote_Confirm(
-		ID_type Identifier,
-		Transfer_Status_type Tx_Status);
+		L_SDU_RemoteCfm_type CurrentConfirm);
 
 void L_Remote_Indication(
-		RemoteBuffer_type *CurrentTxRemote);
+		L_SDU_RemoteInd_type CurrentTxRemote);
 #endif

@@ -17,10 +17,5 @@
 #define CAN_FD				1
 
 
-void L_Data_Indication(
-		CanBuffer_type * CurrentRxBuffer);
 
-void L_Data_Confirm(
-		ID_type Identifier,
-		Transfer_Status_type Tx_Status);
 #endif /* CANIF_CFG_H_ */

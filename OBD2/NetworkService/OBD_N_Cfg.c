@@ -5,6 +5,15 @@
  *      Author: zezhongzhao
  */
 
+#include "OBD_N_Cfg.h"
+#include "OBD_N_task.h"
+
+
+
+
+
+
+
 
 /*
  * Function:
@@ -13,8 +22,8 @@
  * Return:
  *
  */
-void N_USDataConfirm(
-		N_SDU_DataCfm_type parameter){
+void N_ChangeParameterRequest(
+		N_SDU_DataFFReq_type parameter){
 
 }
 
@@ -26,11 +35,7 @@ void N_USDataConfirm(
  * Return:
  *
  */
-void N_USDataFFIndication(
-		N_SDU_DataFFInd_type parameter){
+void N_ChangePatameterConfirm(
+		N_SDU_ChgParaCfm_type parameter){
 
 }
-
-
-
-
